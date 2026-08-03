@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_configs",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_configs",
+  "parent":{
+    "name":"Nonejam13",
+    "path":"Nonejam13.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

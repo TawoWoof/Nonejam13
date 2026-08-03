@@ -1,6 +1,6 @@
-if (player == noone) exit;
+if (player == noone || !instance_exists(player)) exit;
 
-var _angle = point_direction(player.x, player.y, mouse_x, mouse_y)
+var _angle = player.mira_atual;
 
 x = player.x + lengthdir_x(orbita, _angle)
 y = player.y + lengthdir_y(orbita, _angle)

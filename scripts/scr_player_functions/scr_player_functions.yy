@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"globals",
+  "%Name":"scr_player_functions",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"globals",
+  "name":"scr_player_functions",
   "parent":{
     "name":"Nonejam13",
     "path":"Nonejam13.yyp",

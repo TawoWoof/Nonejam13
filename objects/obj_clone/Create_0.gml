@@ -1,6 +1,11 @@
+//Infos do playback
+buffer = [];
+playback_step = 0;
+frozen = false;
+
 //cria a arma e define o dono dela
-gun = instance_create_layer(x, y, layer, obj_gun)
-gun.player = id
+gun = instance_create_layer(x, y, layer, obj_gun);
+gun.player = id;
 
 //Inicializa os status
 var _stats = start_stats();
@@ -13,16 +18,6 @@ cooldown = 0;
 max_hp = _stats.max_hp;
 hp = max_hp
 
-type = BULLET_OWNER.PLAYER;
+type = BULLET_OWNER.CLONE;
 mira_atual = 0;
 
-//Gravador de Input
-loop_start_x = x;
-loop_start_y = y;
-input_actions = criar_input();
-recording_buffer = [];
-record_step = 0;
-
-global.player = id;
-
-last_input = 0;

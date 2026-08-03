@@ -1,14 +1,26 @@
-//Calcula a diração do movimento
-var _move_x = keyboard_check(global.move_right) - keyboard_check(global.move_left);
-var _move_y = keyboard_check(global.move_down) - keyboard_check(global.move_up);
-
-//Normaliza a velocidade das diagonais
-var _dist = point_distance(0, 0, _move_x, _move_y)
-if(_dist > 1){
-	_move_x /= _dist;
-	_move_y /= _dist;
+//Captura Ações
+var _input = {};
+for (var i = 0; i < array_length(input_actions); i++) {
+	var _acao = input_actions[i];
+	_input[$ _acao.name] = _acao.read();
 }
 
-//executa o movimento
-x += _move_x * move_speed;
-y += _move_y * move_speed;
+
+//Move baseado no input
+mover(_input.move_x, _input.move_y);
+
+//setta a mira
+mira_atual = _input.mira
+
+//Redu o cooldown se ele existe
+if (cooldown > 0) { cooldown -= 1; }
+
+//Atira
+if (_input.atirando) { atirar(_input.mira); }
+
+//Salva o frame
+_input.step = record_step;
+array_push(recording_buffer, _input);
+record_step += 1;
+
+last_input = _input;
