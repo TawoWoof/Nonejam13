@@ -14,6 +14,7 @@ var _info = [
 	"mira: " + string(last_input.mira),
 	"atirando: " + string(last_input.atirando),
 	"cooldown: " + string(cooldown),
+	"VEL X : " + string(vel_x) + " VEL Y : " + string(vel_y),
 ];
 
 for(var i = 0; i < array_length(_info); i++)

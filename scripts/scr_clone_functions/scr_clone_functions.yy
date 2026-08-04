@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_clone_functions",
   "parent":{
-    "name":"Nonejam13",
-    "path":"Nonejam13.yyp",
+    "name":"Entidades",
+    "path":"folders/Scripts/Entidades.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"scr_input",
+  "%Name":"scr_playback",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scr_input",
+  "name":"scr_playback",
   "parent":{
-    "name":"Nonejam13",
-    "path":"Nonejam13.yyp",
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

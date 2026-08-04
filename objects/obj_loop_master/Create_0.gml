@@ -1,4 +1,6 @@
+//Salva seu ID
 global.loop_master = id;
 
+//Loop Info
 loops = [];
-loop_atual = 1;
+global.loop_atual = 0;

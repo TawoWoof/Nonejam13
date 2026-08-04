@@ -9,9 +9,8 @@ var _spacing = 10 + _font_size;
 var _ultimo_loop = (array_length(loops) > 0) ? loops[array_length(loops) - 1] : undefined;
 
 var _info = [
-	"loop atual: " + string(loop_atual),
+	"loop atual: " + string(global.loop_atual),
 	"loops salvos: " + string(array_length(loops)),
-	"global.win: " + string(global.win),
 	"ultimo loop salvo: " + (is_undefined(_ultimo_loop) ? "nenhum ainda" : (string(_ultimo_loop.loop_index) + " (" + string(array_length(_ultimo_loop.buffer)) + " frames)")),
 ];
 

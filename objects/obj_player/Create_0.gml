@@ -2,27 +2,34 @@
 gun = instance_create_layer(x, y, layer, obj_gun)
 gun.player = id
 
-//Inicializa os status
-var _stats = start_stats();
-move_speed = _stats.move_speed;
-fire_rate = _stats.fire_rate;
-bullet_speed = _stats.bullet_speed;
-bullet_dmg = _stats.bullet_dmg;
-cooldown = 0;
+//Inicialização de Status (Fixo por enquanto, alterar se der tempo)
+var _stats = start_stats();				//Chama a função para pegar status padrão
 
-max_hp = _stats.max_hp;
-hp = max_hp
+max_hp = _stats.max_hp;					//HP máximo
+hp = max_hp								//HP atual
 
-type = BULLET_OWNER.PLAYER;
-mira_atual = 0;
+fire_rate = _stats.fire_rate;			//Cadência de tiro
+bullet_speed = _stats.bullet_speed;		//Velocidade do tiro
+bullet_dmg = _stats.bullet_dmg;			//Dano do tiro
+cooldown = 0;							//Timer do cooldown entre tiros
 
-//Gravador de Input
-loop_start_x = x;
-loop_start_y = y;
-input_actions = criar_input();
-recording_buffer = [];
-record_step = 0;
+move_speed = _stats.move_speed;			//Velocidade de Movimento
+accel = _stats.accel;					//Aceleração
+decel = _stats.decel;					//Desaceleração
+vel_x = _stats.vel_x;					//Velocidade Atual do eixo X
+vel_y = _stats.vel_y;					//Velocidade Atual do eixo Y
 
-global.player = id;
 
-last_input = 0;
+type = BULLET_OWNER.PLAYER;		//Define o time
+mira_atual = 0;					//Onde está mirando
+
+//Gravador de input inicial
+loop_start_x = x;					//Posição X inicial
+loop_start_y = y;					//Posição Y inicial
+input_actions = criar_input();		//Cria o input do player
+recording_buffer = [];				//Buffer (Lugar onde vai gravar)
+record_step = 0;					//Step de gravação atual
+
+global.player = id;					//Salva seu ID como player
+
+last_input = { move_x: 0, move_y: 0, mira: 0, atirando: false }; //Último input. É mais pra debug, tem informação pra evitar crash

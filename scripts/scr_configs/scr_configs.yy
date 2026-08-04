@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_configs",
   "parent":{
-    "name":"Nonejam13",
-    "path":"Nonejam13.yyp",
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
