@@ -8,8 +8,8 @@
   "name":"obj_clone_tutorial",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objects",
-    "path":"folders/Objects.yy",
+    "name":"Entidades",
+    "path":"folders/Objects/Entidades.yy",
   },
   "parentObjectId":{
     "name":"obj_clone",

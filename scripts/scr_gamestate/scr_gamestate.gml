@@ -3,6 +3,7 @@ enum GAME {
 	CUTSCENE,	
 	GAP,		//Respiro
 	LIVRE,		//Movimento sem gravação
+	FREEZE,		//Sem movimento de entidades
 	LOOP,		//Jogando e Gravando
 	MORTE		
 }
@@ -19,6 +20,7 @@ function estado_trocar(_novo) {
 		case GAME.CUTSCENE:		entrar_cutscene();	break;
 		case GAME.GAP:			entrar_gap();		break;
 		case GAME.LIVRE:		entrar_livre();		break;
+		case GAME.FREEZE:		entrar_freeze();	break;
 		case GAME.LOOP:			entrar_loop();		break;
 		case GAME.MORTE:		entrar_morte();		break;
 	}
@@ -33,6 +35,7 @@ function estado_passo() {
 		case GAME.CUTSCENE:		passo_cutscene();	break;
 		case GAME.GAP:			passo_gap();		break;
 		case GAME.LIVRE:		passo_livre();		break;
+		case GAME.FREEZE:		passo_freeze();		break;
 		case GAME.LOOP:			passo_loop();		break;
 		case GAME.MORTE:		passo_morte();		break;
 	}
@@ -41,7 +44,8 @@ function estado_passo() {
 function jogo_rodando() {
 	return (	global.estado != GAME.MENU
 			&&  global.estado != GAME.MORTE
-			&&  global.estado != GAME.CUTSCENE);
+			&&  global.estado != GAME.CUTSCENE
+			&&  global.estado != GAME.FREEZE);
 }
 /// @desc Entra numa cutscene e então vai para o destino
 /// @arg {REAL} _destino Estado depois da cutscene
@@ -172,8 +176,11 @@ function loop_tempo_calcular(_loop) {
 	//Loops de tutorial rodam sem relógio
 	if (_loop <= global.loops_tutorial) return TIMELESS;
 	
+	//Bônus vindo de carta
+	var _bonus = instance_exists(global.player) ? global.player.tempo_bonus : 0;
+	
 	//Aumenta o tempo baseado na quantidade de clones
-	return global.tempo_base + (global.tempo_por_clone * _loop);
+	return global.tempo_base + (global.tempo_por_clone * _loop) + _bonus;
 }
 
 /// @desc Texto do relógio pro HUD
@@ -181,4 +188,32 @@ function loop_tempo_texto() {
 	if (global.loop_tempo == TIMELESS) return "";
 	
 	return tempo_formatar(loop_ms_restantes());
+}
+
+function entrar_freeze()
+{
+	global.cartas_opcoes = cartas_sortear_varias(global.cartas_opcoes_n);
+}
+
+function passo_freeze()
+{
+	var _n = array_length(global.cartas_opcoes);
+	
+	if(_n == 0)
+	{
+		estado_trocar(GAME.LIVRE)
+		exit
+	}
+	
+	for (var i=0; i < _n; i++)
+	{
+		if (!keyboard_check_pressed(ord(string(i+1)))){ continue }
+		
+		carta_obter(global.cartas_opcoes[i]);
+		global.cartas_disponiveis -= 1;
+		
+		global.cartas_opcoes = []
+		estado_trocar(GAME.LIVRE);
+		exit
+	}
 }

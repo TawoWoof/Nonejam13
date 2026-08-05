@@ -184,8 +184,146 @@ function carta_obter(_carta)
 {
 	if (is_undefined(_carta)){ exit }
 	
+	if (_carta.categoria == CARTA_CAT.ARMA){ arma_remover() }
+	
 	array_push(global.inventario, _carta.id);
+	
+	stats_recalcular();
+	
 	_carta.ao_obter();
 	
+	
+	
 	show_debug_message("Obteve Carta: " + string(_carta.nome) + " (" + string(carta_copias(_carta.id)) + "x)");
+}
+
+/// @desc Monta um struct de stats a partir das cartas
+/// @arg {Array} _ids ID das cartas
+/// @arg {BOOL} _eh_clone True se for status de clone
+function stats_montar(_ids, _eh_clone = false)
+{
+	//Puxa os stats iniciais
+	var _stats = start_stats();
+	
+	//Loopa duas vezes pra corrigir a arma
+	for(var _passada = 0; _passada < 2; _passada++)
+	{
+		for(var i = 0; i < array_length(_ids); i++)
+		{
+			var _carta = carta_por_id(_ids[i])
+		
+			if (is_undefined(_carta)) { continue }
+			
+			var _eh_arma = (_carta.categoria == CARTA_CAT.ARMA);
+			
+			//Começa com um loop de armas e depois aplica os stats
+			if(_passada == 0 && !_eh_arma){ continue }
+			if(_passada == 1 && _eh_arma){ continue }
+			
+			carta_aplicar(_carta, _stats, _eh_clone);
+		}
+	}
+	
+	if (_eh_clone){ _stats.bullet_speed *= _stats.clone_bullet_multiplier; }
+	
+	return _stats
+}
+
+/// @desc Escreve uma struct de stats nas variáveis de instância
+/// @arg {Id.Instance} _inst
+/// @arg {Struct} _stats
+function stats_escrever(_inst, _stats)
+{
+	var _chaves = struct_get_names(_stats)
+	
+	for(var i = 0; i < array_length(_chaves); i++)
+	{
+		variable_instance_set(_inst, _chaves[i], _stats[$ _chaves[i]])
+	}
+}
+
+/// @desc Reconstrói os stats do player pelo inventário
+function stats_recalcular()
+{
+	if (global.player == noone || !instance_exists(global.player)){ exit }
+	
+	stats_escrever(global.player, stats_montar(global.inventario))
+	
+	//Vida atual não pode passar do teto novo
+	global.player.hp = min(global.player.hp, global.player.max_hp)
+}
+
+/// @desc Lista de cartas do clone (Loop atual)
+function heranca_calcular()
+{
+	var _lista = [];
+	array_copy(_lista, 0, global.inventario, 0, array_length(global.inventario))
+
+	return _lista;
+}
+
+/// @desc Tira carta de armas do inventário
+function arma_remover()
+{
+	for (var i = array_length(global.inventario) -1; i >= 0; i--)
+	{
+		var _c = carta_por_id(global.inventario[i]);
+		
+		if (!is_undefined(_c) && _c.categoria == CARTA_CAT.ARMA)
+		{
+			array_delete(global.inventario, i, 1)
+		}
+	}
+}
+
+/// @desc Sorteia um indice para pool proporcional ao peso
+/// @arg {Array} _pool
+function pool_sortear(_pool)
+{
+	var _total = 0;
+	for (var i = 0; i < array_length(_pool); i++)
+	{
+		_total += carta_peso(_pool[i]);
+	}
+	
+	if (_total <= 0){ return 0 };
+	
+	var _sorteio = random(_total);
+	var _acumulado = 0;
+	
+	for (var i = 0; i < array_length(_pool); i++)
+	{
+		_acumulado += carta_peso(_pool[i]);
+		
+		if (_sorteio < _acumulado){ return i }
+	}
+	
+	return array_length(_pool) - 1;
+}
+
+/// @desc Sorteia N cartas DISTINTAS entre as disponiveis
+/// @arg {REAL} _n Quantidade desejada
+function cartas_sortear_varias(_n)
+{
+	//cartas elegiveis
+	var _pool = [];
+	var _todas = cartas_catalogo();
+	
+	for(var i = 0; i < array_length(_todas); i++)
+	{
+		if(carta_disponivel(_todas[i])){ array_push(_pool, _todas[i]) }
+	}
+	
+	var _resultado = []
+	for(var i = 0; i < _n; i++)
+	{
+		if (array_length(_pool) == 0){ break }
+		
+		var _idx = pool_sortear(_pool)
+		
+		array_push(_resultado, _pool[_idx])
+		array_delete(_pool, _idx, 1);
+	}
+	
+	return _resultado;
 }

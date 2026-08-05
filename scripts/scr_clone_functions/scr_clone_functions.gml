@@ -7,10 +7,11 @@ function spawn_clones() {
 		//Para cada loop, cria um clone e define seus atributos	
 		var _clone = instance_create_layer(_loop.spawn_x, _loop.spawn_y, global.player.layer, obj_clone);
 		_clone.buffer = _loop.buffer;
-		_clone.max_hp = _loop.max_hp;
-		_clone.hp = _loop.max_hp;
 		_clone.loop_index = _loop.loop_index;
-		_clone.has_dash = _loop.has_dash;
+		_clone.cartas = _loop.cartas;
+		
+		stats_escrever(_clone, stats_montar(_loop.cartas, true));
+		_clone.hp = _clone.max_hp;
 		
 		//Se existe um buffer no clone, cria um target para a mira
 		if (array_length(_loop.buffer) > 0) {
@@ -24,7 +25,8 @@ function spawn_clones() {
 function die(_alvo)
 {
 	//Marca a pontuação do clone
-	var _pontos = clone_valor(_alvo.loop_index)
+	var _bonus = instance_exists(global.player) ? global.player.pontos_bonus : 0;
+	var _pontos = clone_valor(_alvo.loop_index, _bonus)
 	global.pontos += _pontos;
 	global.pontos_abates += _pontos
 	

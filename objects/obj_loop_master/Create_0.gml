@@ -16,3 +16,4 @@ global.loop_tempo = TIMELESS;
 
 //Upgrades
 global.inventario = [];
+global.cartas_disponiveis = 0;

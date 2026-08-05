@@ -124,22 +124,44 @@ function empurrar()
 /// @arg {REAL} _mira Onde estava mirando
 function atirar(_mira){
 	//Se está no cooldown, sai
-	if (cooldown > 0) exit;
+	if (cooldown > 0 || bullet_count <= 0){ exit };
 	
-	//Spawna a bala e passa as propriedades
+	//Spawna a bala na posição correta
 	var _spawn_dist = (gun != noone) ? gun.orbita+gun.cano : 0;
 	var _spawn_x = x + lengthdir_x(_spawn_dist, _mira);
 	var _spawn_y = y + lengthdir_y(_spawn_dist, _mira);
-	var _bullet = instance_create_layer(_spawn_x, _spawn_y, layer, obj_bullet);
 	
-	_bullet.bullet_dir = _mira;
-	_bullet.bullet_speed = bullet_speed;
-	_bullet.image_angle = _mira;
-	_bullet.dmg = bullet_dmg;
-	_bullet.owner_type = type;
-	_bullet.sprite_index = (type == BULLET_OWNER.PLAYER) ? spr_bullet_player : spr_bullet_enemy;
+	//Efeito de Spread
+	var _meio = bullet_spread * 0.5
+	
+	var _spr = (type == BULLET_OWNER.PLAYER) ? spr_bullet_player : spr_bullet_enemy
+	
+	var _espaco = sprite_get_width(_spr) * bullet_scale;
+	var _raio = (bullet_count > 1) ? (bullet_count * _espaco) / (2 * pi) : 0;
+	
+	for (var i = 0; i < bullet_count; i++)
+	{
+		var _ang = _mira + random_range(-_meio, _meio)
+		
+		//Posição do anel (lá ele)
+		var _ang_clump = _mira + (360 / bullet_count) * i;
+		var _bx = _spawn_x + lengthdir_x(_raio, _ang_clump)
+		var _by = _spawn_y + lengthdir_y(_raio, _ang_clump)
+		
+		var _bullet = instance_create_layer(_bx, _by, layer, obj_bullet);
+	
+		_bullet.bullet_dir = _ang;
+		_bullet.bullet_speed = bullet_speed;
+		_bullet.image_angle = _ang;
+		_bullet.dmg = bullet_dmg;
+		_bullet.owner_type = type;
+		_bullet.sprite_index = (type == BULLET_OWNER.PLAYER) ? spr_bullet_player : spr_bullet_enemy;
+		_bullet.image_xscale = bullet_scale
+		_bullet.image_yscale = bullet_scale
+	}
 	
 	//chama o shake se for o player
+	//POR DISPARO, NÃO POR BALA
 	if (type == BULLET_OWNER.PLAYER) { shake_add(global.shake_tiro, _mira); }
 	
 	//Ativa o cooldown
@@ -183,7 +205,70 @@ function dashear(_move_x, _move_y, _mira)
 	var _parado = (_move_x == 0 && _move_y == 0);
 	dash_dir = _parado ? _mira : point_direction(0, 0, _move_x, _move_y);
 	
-	dash_timer = global.dash_duration;
-	dash_cooldown = global.dash_cooldown;
-	invul_timer = global.dash_duration + global.dash_invul_buffer
+	dash_timer = dash_dur;
+	dash_cooldown = dash_cd;
+	invul_timer = dash_dur + global.dash_invul_buffer
+}
+
+/// @desc Retorna se o player está perto do objeto
+function perto_do_player(_dist = global.interacao_dist)
+{
+	if (!instance_exists(global.player)){ return false }
+	
+	var _dist_curta = (point_distance(x, y, global.player.x, global.player.y) <= _dist)
+	
+	return (_dist_curta)
+}
+
+/// @desc Desenha o aviso de interação
+/// @arg {String} _texto
+function desenhar_prompt(_texto)
+{
+	draw_set_font(fnt_debug)
+	
+	draw_set_halign(fa_center)
+	
+	draw_text(x, bbox_top - 12, _texto)
+	
+	draw_set_halign(fa_left)
+	
+	draw_set_font(-1)
+}
+
+/// @desc Decide qual interativo está mais perto
+function interativo_atualizar()
+{
+	global.interacao_alvo = noone;
+	
+	if (!instance_exists(global.player)){ exit }
+	
+	var _melhor = noone;
+	var _melhor_dist = global.interacao_dist;
+	
+	var _n = instance_number(obj_interativos)
+	
+	for(var i = 0; i < _n; i++)
+	{
+		var _inst = instance_find(obj_interativos, i);
+		
+		var _ok = false;
+		with (_inst){ _ok = pode_interagir() }
+		if (!_ok){ continue }
+		
+		var _d = point_distance(global.player.x, global.player.y, _inst.x, _inst.y)
+		
+		if(_d <= _melhor_dist)
+		{
+			_melhor_dist = _d;
+			_melhor = _inst;
+		}
+	}
+	
+	global.interacao_alvo = _melhor;
+}
+
+/// @desc Esse objeto é o alvo de interação?
+function interativo_ativo()
+{
+	return (global.interacao_alvo == id)
 }

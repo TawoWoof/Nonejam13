@@ -1,17 +1,15 @@
 {
   "$GMObject":"",
-  "%Name":"obj_loop_master",
+  "%Name":"obj_menu_button",
   "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":64,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"obj_loop_master",
+  "name":"obj_menu_button",
   "overriddenProperties":[],
   "parent":{
-    "name":"Controladores",
-    "path":"folders/Objects/Controladores.yy",
+    "name":"Itens de Menu",
+    "path":"folders/Objects/Itens de Menu.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -27,11 +25,21 @@
   "physicsShape":1,
   "physicsShapePoints":[],
   "physicsStartAwake":true,
-  "properties":[],
+  "properties":[
+    {"$GMObjectProperty":"v2","%Name":"on_click","filters":[],"listItems":[
+        "\"Jogar\"",
+        "\"Créditos\"",
+        "\"Configurações\"",
+        "\"Sair\"",
+      ],"multiselect":false,"name":"on_click","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"\"Jogar\"","varType":6,},
+  ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"spr_button_menu",
+    "path":"sprites/spr_button_menu/spr_button_menu.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

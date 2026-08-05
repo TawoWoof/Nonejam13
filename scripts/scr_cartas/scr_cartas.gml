@@ -22,10 +22,26 @@
 function cartas_definir()
 {
 	return [
-	
 	#region TYPE - ARMA
 	
 		#region COMUM
+			carta_criar(
+			{
+				id: "arma_inicial",
+				nome: "Pistola",
+				desc: "Faz o básico, como sempre.",
+				categoria:	CARTA_CAT.ARMA,
+				raridade: CARTA_RAR.COMUM,
+				max_copias:	1,
+				aplicar: function(_s)
+				{
+					_s.bullet_count  = 1;
+					_s.bullet_spread = 18;
+					_s.fire_rate	 = 20;
+					_s.bullet_speed  = 8;
+					_s.bullet_dmg	 = 1;
+				}
+			}),
 		#endregion
 	
 		#region INCOMUM
@@ -36,7 +52,14 @@ function cartas_definir()
 				desc: "De perto, a conversa é outra",
 				categoria:	CARTA_CAT.ARMA,
 				raridade: CARTA_RAR.INCOMUM,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s) {
+					_s.bullet_count = 5;
+					_s.bullet_spread = 40;
+					_s.fire_rate = 45;
+					_s.bullet_speed = 7;
+					_s.bullet_dmg = 1;
+				}
 			}),
 			
 			carta_criar(
@@ -46,7 +69,14 @@ function cartas_definir()
 				desc: "Senta o dedo nessa porra!",
 				categoria:	CARTA_CAT.ARMA,
 				raridade: CARTA_RAR.INCOMUM,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s) {
+					_s.bullet_count = 1;
+					_s.bullet_spread = 25;
+					_s.fire_rate = 6;
+					_s.bullet_speed = 10;
+					_s.bullet_dmg = 1;
+				}
 			}),
 			
 			carta_criar(
@@ -56,7 +86,14 @@ function cartas_definir()
 				desc: "Um tiro, um problema a menos",
 				categoria:	CARTA_CAT.ARMA,
 				raridade: CARTA_RAR.INCOMUM,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s) {
+					_s.bullet_count = 1;
+					_s.bullet_spread = 2;
+					_s.fire_rate = 40;
+					_s.bullet_speed = 16;
+					_s.bullet_dmg = 3;
+				}
 			}),
 			
 		#endregion
@@ -69,7 +106,14 @@ function cartas_definir()
 				desc: "É TREIX!!!",
 				categoria:	CARTA_CAT.ARMA,
 				raridade: CARTA_RAR.RARA,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s) {
+					_s.bullet_count = 3;
+					_s.bullet_spread = 8;
+					_s.fire_rate = 35;
+					_s.bullet_speed = 12;
+					_s.bullet_dmg = 1;
+				}
 			}),
 		#endregion
 	
@@ -81,7 +125,14 @@ function cartas_definir()
 				desc: "Corredor congestionado? Deixa que eu limpo!",
 				categoria:	CARTA_CAT.ARMA,
 				raridade: CARTA_RAR.LENDARIA,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s) {
+					_s.bullet_count = 7;
+					_s.bullet_spread = 90;
+					_s.fire_rate = 60;
+					_s.bullet_speed = 6;
+					_s.bullet_dmg = 1;
+				}
 			}),
 		#endregion
 		
@@ -104,7 +155,7 @@ function cartas_definir()
 				requisito: function() { /* NÃO ter o teleport */ }
 			}),
 		#endregion
-	
+		
 		#region RARA
 			carta_criar(
 			{
@@ -201,7 +252,7 @@ function cartas_definir()
 				desc: "Quanto menor sua vida, mais dano você causa",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
-				requisito: function() { /* Ter pelo menos 3 de vida máxima */ }
+				requisito: function() { /* Ter pelo menos 3 de vida máxima*/ }
 			}),
 		#endregion
 	
@@ -237,7 +288,7 @@ function cartas_definir()
 				raridade: CARTA_RAR.LENDARIA,
 				heranca: HERANCA.NENHUMA,
 				max_copias:	1,
-				requisito: function() { /* Ter a carta passive_shards_1 */ }
+				requisito: function() { /* Ter a carta passive_shards_1*/ }
 			}),
 			
 			carta_criar(
@@ -267,7 +318,7 @@ function cartas_definir()
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.LENDARIA,
 				heranca: HERANCA.NENHUMA,
-				requisito: function() { /* requer carta skill_stop */ }
+				requisito: function() { /* requer carta skill_stop*/ }
 			}),
 		#endregion
 		
@@ -282,7 +333,8 @@ function cartas_definir()
 				nome: "Pé Leve",
 				desc: "Você anda mais rápido",
 				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.move_speed += 1; }
 			}),
 			
 			carta_criar(
@@ -291,7 +343,8 @@ function cartas_definir()
 				nome: "Smokin' Joe Rudeboy",
 				desc: "Sua cadência de tiro é reduzida",
 				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.fire_rate = max(4, _s.fire_rate - 3); }
 			}),
 			
 			carta_criar(
@@ -300,7 +353,8 @@ function cartas_definir()
 				nome: "Chumbo Grosso",
 				desc: "Suas Balas dão mais dano",
 				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.bullet_dmg += 1; }
 			}),
 			
 			carta_criar(
@@ -309,7 +363,8 @@ function cartas_definir()
 				nome: "Cano Longo",
 				desc: "Seus tiros são mais rápidos",
 				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.bullet_speed += 1; }
 			}),
 		#endregion
 	
@@ -320,7 +375,9 @@ function cartas_definir()
 				nome: "Cardio",
 				desc: "Vida máxima +1",
 				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.INCOMUM
+				raridade: CARTA_RAR.INCOMUM,
+				aplicar: function(_s){ _s.max_hp += 1; },
+				ao_obter: function() { global.player.hp += 1 }
 			}),
 			
 			carta_criar(
@@ -330,7 +387,8 @@ function cartas_definir()
 				desc: "Dash maior",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
-				requisito: function() { /* Ter o dash */ }
+				aplicar: function(_s){ _s.dash_speed += 2; },
+				requisito: function() { /* Ter o dash*/ }
 			}),
 			
 			carta_criar(
@@ -340,7 +398,8 @@ function cartas_definir()
 				desc: "Distância de Teleporte melhorada",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
-				requisito: function() { /* Ter o Teleporte */ }
+				aplicar: function(_s){ _s.teleport_dist += 32; },
+				requisito: function() { /* Ter o Teleporte*/ }
 			}),
 			
 			carta_criar(
@@ -350,7 +409,8 @@ function cartas_definir()
 				desc: "Reduz o cooldown do dash",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
-				requisito: function() { /* Ter o dash */ }
+				aplicar: function(_s){ _s.dash_cd = max(10, _s.dash_cd - 8); },
+				requisito: function() { /* Ter o dash*/ }
 			}),
 			
 			
@@ -364,7 +424,10 @@ function cartas_definir()
 				desc: "Seus projéteis ficam maiores",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.RARA,
-				heranca: HERANCA.PARCIAL
+				heranca: HERANCA.PARCIAL,
+				max_cartas: 8,
+				aplicar: function(_s){ _s.bullet_scale += 0.5; },
+				aplicar_clone: function(_s){ _s.bullet_scale += 0.25; }
 			}),
 		#endregion
 	
@@ -376,7 +439,8 @@ function cartas_definir()
 				desc: "Mais tempo para finalizar o round",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.LENDARIA,
-				heranca: HERANCA.NENHUMA
+				heranca: HERANCA.NENHUMA,
+				aplicar: function(_s){ _s.tempo_bonus += 300; },
 			}),
 			
 			carta_criar(
@@ -386,7 +450,8 @@ function cartas_definir()
 				desc: "Clones dão mais pontos!",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.LENDARIA,
-				heranca: HERANCA.NENHUMA
+				heranca: HERANCA.NENHUMA,
+				aplicar: function(_s){ _s.pontos_bonus += 50; },
 			}),
 		#endregion
 		
@@ -447,7 +512,7 @@ function cartas_definir()
 				heranca: HERANCA.PARCIAL
 			}),
 		#endregion
-	
+		
 		#region LENDÁRIA
 			carta_criar(
 			{
@@ -456,7 +521,7 @@ function cartas_definir()
 				desc: "De volta ao remetente!",
 				categoria:	CARTA_CAT.ITEM,
 				raridade: CARTA_RAR.LENDARIA,
-				heranca: HERANCA.NENHUMA
+				heranca: HERANCA.NENHUMA,
 			}),
 		#endregion
 		

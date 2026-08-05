@@ -14,11 +14,15 @@ function loop_end() {
 		buffer: global.player.recording_buffer,
 		spawn_x: global.player.loop_start_x,
 		spawn_y: global.player.loop_start_y,
-		max_hp: global.player.max_hp,
-		has_dash: global.player.has_dash
+		cartas: heranca_calcular()
 	};
 	
 	array_push(loops, _loop);
+	
+	if (global.loop_atual > 0 && global.loop_atual mod global.cartas_intervalo == 0)
+	{
+		global.cartas_disponiveis += 1;	
+	}
 	
 	limpar_balas();
 	

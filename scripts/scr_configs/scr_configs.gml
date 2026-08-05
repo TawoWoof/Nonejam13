@@ -29,7 +29,7 @@ global.loop_factor = 1;			//Peso do loop de origem no valor do clone
 global.pontos_abates = 0;		//Pontos de abate no loop atual
 global.pontos_tempo = 0;		//Pontos de relógio do último loop
 
-global.inventario = [];			//ID de upgrades (Repetir = empilhar)
+global.inventario = ["arma_inicial"];			//ID de upgrades (Repetir = empilhar)
 
 global.tutorial_x = 0;			//Coordenadas do clone tutorial na room
 global.tutorial_y = 0;			//Coordenadas do clone tutorial na room
@@ -38,26 +38,42 @@ global.move_right	=	 ord("D");
 global.move_left	=	 ord("A");
 global.move_down	=	 ord("S");
 global.move_up		=	 ord("W");
+global.interagir	=	 ord("F")
 global.dash			=	 vk_space;
 global.shoot		=	 mb_left;
 
-global.dash_duration = 10;
-global.dash_cooldown = 45;
-global.dash_invul_buffer = 5; //Invulnerabilidade EXTRA (depois do dash)
+global.dash_invul_buffer = 5;	//Invulnerabilidade EXTRA (depois do dash)
+global.interacao_dist = 64;		//Distância máxima pra interagir com objetos
+global.interacao_alvo = noone	//objeto alvo de interação
+
+global.cartas_disponiveis = 0;	//	
+global.cartas_intervalo = 5;	//	
+global.cartas_opcoes = [];		//
+global.cartas_opcoes_n = 3;		//
+
+global.player = noone;
+global.loop_master = noone;
 
 function start_stats() {
 	return {
 		move_speed: 4,
-		fire_rate: 10,
+		fire_rate: 20,
 		bullet_speed: 8,
 		bullet_dmg: 1,
+		bullet_count: 1, //0
+		bullet_spread: 18,
+		bullet_scale: 1,
 		max_hp: 1,
-		vel_x: 0,
-		vel_y: 0,
 		accel: 0.1,
 		decel: 0.3,
 		clone_bullet_multiplier: 0.5,
 		has_dash: false,
-		dash_speed: 14
+		dash_speed: 14,
+		dash_dur: 10,
+		dash_cd: 45,
+		teleport_dist: 96,
+		tempo_bonus: 0,
+		pontos_bonus: 0
+		
 	};
 }
