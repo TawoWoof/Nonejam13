@@ -9,6 +9,8 @@ function spawn_clones() {
 		_clone.buffer = _loop.buffer;
 		_clone.max_hp = _loop.max_hp;
 		_clone.hp = _loop.max_hp;
+		_clone.loop_index = _loop.loop_index;
+		_clone.has_dash = _loop.has_dash;
 		
 		//Se existe um buffer no clone, cria um target para a mira
 		if (array_length(_loop.buffer) > 0) {
@@ -21,12 +23,47 @@ function spawn_clones() {
 ///@arg {Asset.GMObject}  _alvo  Alvo atingido
 function die(_alvo)
 {
+	//Marca a pontuação do clone
+	var _pontos = clone_valor(_alvo.loop_index)
+	global.pontos += _pontos;
+	global.pontos_abates += _pontos
+	
 	//Destrói o clone e a arma
 	instance_destroy(_alvo.gun);
 	instance_destroy(_alvo);
+	
+	global.kills_loop += 1;
 	
 	//Se for o último clone do loop, avisa ao controlador que o player terminou
 	if (instance_number(obj_clone) == 0) {
 		with (global.loop_master) { loop_end(); }
 	}
+}
+
+///@desc Reseta o playback
+function playback_reiniciar() {
+	if (array_length(buffer) == 0) exit;
+	
+	playback_step = 0;
+	
+	//A arma gira suave da mira atual até a do primeiro frame gravado
+	mira_inicial = mira_atual;
+	mira_alvo = buffer[0].mira;
+	
+
+	delay = global.delay;	
+	cooldown = 0;
+	dash_timer = 0;
+	dash_cooldown = 0;
+}
+
+///@desc Retorna o valor de um clone baseado no loop de origem
+///@arg {REAL} _loop Loop de orgiem
+///@arg {REAL} _upgrade Bônus somado a base
+function clone_valor(_loop, _upgrade = 0)
+{
+	//Tutorial NÃO pontua
+	if (_loop <= global.loops_tutorial) return 0;
+	
+	return (global.clone_pontos + _upgrade) * (_loop * global.loop_factor);
 }

@@ -12,6 +12,8 @@ for (var i = 0; i < array_length(input_actions); i++) {
 }
 
 
+if(_input.dash) { dashear(_input.move_x, _input.move_y, _input.mira) }
+
 //Move baseado no input
 mover(_input.move_x, _input.move_y);
 empurrar();

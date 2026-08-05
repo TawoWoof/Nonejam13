@@ -2,6 +2,7 @@ enum GAME {
 	MENU,		
 	CUTSCENE,	
 	GAP,		//Respiro
+	LIVRE,		//Movimento sem gravação
 	LOOP,		//Jogando e Gravando
 	MORTE		
 }
@@ -17,6 +18,7 @@ function estado_trocar(_novo) {
 		case GAME.MENU:			entrar_menu();		break;
 		case GAME.CUTSCENE:		entrar_cutscene();	break;
 		case GAME.GAP:			entrar_gap();		break;
+		case GAME.LIVRE:		entrar_livre();		break;
 		case GAME.LOOP:			entrar_loop();		break;
 		case GAME.MORTE:		entrar_morte();		break;
 	}
@@ -30,6 +32,7 @@ function estado_passo() {
 		case GAME.MENU:			passo_menu();		break;
 		case GAME.CUTSCENE:		passo_cutscene();	break;
 		case GAME.GAP:			passo_gap();		break;
+		case GAME.LIVRE:		passo_livre();		break;
 		case GAME.LOOP:			passo_loop();		break;
 		case GAME.MORTE:		passo_morte();		break;
 	}
@@ -56,7 +59,7 @@ function entrar_menu() {
 
 function passo_menu() {
 	if (keyboard_check_pressed(vk_anykey)) {
-		estado_trocar(GAME.GAP);
+		estado_trocar(GAME.LIVRE);
 	}
 }
 
@@ -65,25 +68,42 @@ function entrar_gap() {
 }
 
 function passo_gap() {
-	if (global.estado_timer >= global.loop_gap) {
+	
+	var _espera = (global.estado_anterior == GAME.MENU) ? 0 : global.loop_gap
+	
+	if (global.estado_timer >=_espera) {
 		estado_trocar(GAME.LOOP);
 	}
 }
 
 function entrar_loop() {
+	
 	if (!instance_exists(global.loop_master)) exit;
 	
 	if (array_length(global.loop_master.loops) == 0) {
+		
+		global.player.loop_start_x = global.player.x
+		global.player.loop_start_y = global.player.y
 		global.gravando = true;
-		exit;
+	} else {
+		with (global.loop_master) { loop_start(); }
 	}
 	
-	with (global.loop_master) { loop_start(); }
+	global.loop_tempo = loop_tempo_calcular(global.loop_atual);
+	global.pontos_abates = 0;
+	global.pontos_tempo = 0;
+	
+	limpar_balas()
 }
 
 function passo_loop() {
-	//Loop End = GAP
-	//Game Over() = MORTE
+
+	if (global.loop_tempo == TIMELESS) exit;
+	
+	//Relógio do loop
+	if (global.estado_timer == global.loop_tempo) {
+		timer_estourou();
+	}
 }
 
 function entrar_morte() {
@@ -96,6 +116,16 @@ function passo_morte() {
 	}
 }
 
+function entrar_livre() {
+	global.gravando = false;
+	
+	if (room != Room1) { room_goto(Room1); }
+}
+
+function passo_livre() {
+
+}
+
 function entrar_cutscene() {
 	global.gravando = false;
 }
@@ -104,4 +134,51 @@ function passo_cutscene() {
 	if (global.estado_timer >= global.cutscene_duracao) {
 		estado_trocar(global.cutscene_destino);
 	}
+}
+
+/// @desc Steps que sobraram no relógio do loop
+function loop_steps_restantes() {
+	if (global.estado != GAME.LOOP) return 0;
+	if (global.loop_tempo == TIMELESS) return 0;
+	
+	return max(0, global.loop_tempo - global.estado_timer);
+}
+
+/// @desc Milissegundos restantes
+function loop_ms_restantes() {
+	return floor(loop_steps_restantes() * 1000 / game_get_speed(gamespeed_fps));
+}
+
+/// @desc Formata tempo como S.MMM
+/// @arg {REAL} _ms Milissegundos
+function tempo_formatar(_ms) {
+	var _seg = floor(_ms / 1000);
+	var _mil = _ms mod 1000;
+	
+	//Zero à esquerda pra sempre ter 3 casas
+	var _txt = string(_mil);
+	while (string_length(_txt) < 3) { _txt = "0" + _txt; }
+	
+	return string(_seg) + "." + _txt;
+}
+
+function timer_estourou() {
+	game_over();
+}
+
+/// @desc Calcula o relógio de um loop em steps
+/// @arg {REAL} _loop Número do loop
+function loop_tempo_calcular(_loop) {
+	//Loops de tutorial rodam sem relógio
+	if (_loop <= global.loops_tutorial) return TIMELESS;
+	
+	//Aumenta o tempo baseado na quantidade de clones
+	return global.tempo_base + (global.tempo_por_clone * _loop);
+}
+
+/// @desc Texto do relógio pro HUD
+function loop_tempo_texto() {
+	if (global.loop_tempo == TIMELESS) return "";
+	
+	return tempo_formatar(loop_ms_restantes());
 }

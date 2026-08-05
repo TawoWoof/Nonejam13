@@ -1,5 +1,9 @@
 if (!jogo_rodando()) exit;
 
+//buffer vazio = congelar
+if (array_length(buffer) == 0) { frozen = true }
+if(frozen) exit
+
 //Se tiver delay, reduz o timer e sai do step
 if (delay > 0)
 {
@@ -14,14 +18,14 @@ if (delay > 0)
 
 //Se já terminou de executar o playback, congela
 if (playback_step >= array_length(buffer)) {
-	frozen = true;
+	playback_reiniciar();
+	exit
 }
-
-//se já congelou, saia do step
-if (frozen) exit;
 
 //Setta o frame atual
 var _frame = buffer[playback_step];
+
+if(_frame.dash) { dashear(_frame.move_x, _frame.move_y, _frame.mira) }
 
 //Chama o movimento
 mover(_frame.move_x, _frame.move_y);

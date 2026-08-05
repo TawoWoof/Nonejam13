@@ -4,8 +4,8 @@ function criar_input() {
 		{ name: "move_x",   read: method(self, function() { return keyboard_check(global.move_right) - keyboard_check(global.move_left); }) },
 		{ name: "move_y",   read: method(self, function() { return keyboard_check(global.move_down) - keyboard_check(global.move_up); }) },
 		{ name: "mira",     read: method(self, function() { var _m = mouse_mundo(); return point_direction(x, y, _m.x, _m.y); }) },
-		{ name: "atirando", read: method(self, function() { return mouse_check_button(global.shoot); })
-		},
+		{ name: "atirando", read: method(self, function() { return mouse_check_button(global.shoot); })},
+		{ name: "dash",		read: method(self, function() { return has_dash && keyboard_check_pressed(global.dash); })}
 	];
 }
 
@@ -14,28 +14,39 @@ function criar_input() {
 /// @arg {REAL} _move_y Força do movimento Y
 function mover(_move_x, _move_y) {
 	
-	//Normaliza os vetores
-	var _dist = point_distance(0, 0, _move_x, _move_y);
-	if (_dist > 1) {
-		_move_x /= _dist;
-		_move_y /= _dist;
+	//Cooldown dash
+	if (dash_cooldown > 0) { dash_cooldown -= 1 }
+	if (invul_timer > 0 ) { invul_timer -=1 }
+	
+	if (dash_timer > 0)
+	{
+		dash_timer -= 1;
+		vel_x = lengthdir_x(dash_speed, dash_dir);
+		vel_y = lengthdir_y(dash_speed, dash_dir);
+	}else{
+		var _dist = point_distance(0, 0, _move_x, _move_y);
+		if (_dist > 1)
+		{
+			_move_x /= _dist
+			_move_y /= _dist
+		}
+	
+		//Calcula o target do movimento
+		var _target_x = _move_x * move_speed;
+		var _target_y = _move_y * move_speed;
+	
+		//Calcula a aceleração/desaceleração
+		var _rate_x = (_move_x != 0 ) ? accel : decel;
+		var _rate_y = (_move_y != 0 ) ? accel : decel;
+	
+		//Aplica velocidade
+		vel_x = lerp(vel_x, _target_x, _rate_x);
+		vel_y = lerp(vel_y, _target_y, _rate_y);
+	
+		//Zera a velocidade se estiver no decimais
+		if (abs(vel_x) < 0.05){ vel_x = 0 };
+		if (abs(vel_y) < 0.05){ vel_y = 0 };
 	}
-	
-	//Calcula o target do movimento
-	var _target_x = _move_x * move_speed;
-	var _target_y = _move_y * move_speed;
-	
-	//Calcula a aceleração/desaceleração
-	var _rate_x = (_move_x != 0 ) ? accel : decel;
-	var _rate_y = (_move_y != 0 ) ? accel : decel;
-	
-	//Aplica velocidade
-	vel_x = lerp(vel_x, _target_x, _rate_x);
-	vel_y = lerp(vel_y, _target_y, _rate_y);
-	
-	//Zera a velocidade se estiver no decimais
-	if (abs(vel_x) < 0.05){ vel_x = 0 };
-	if (abs(vel_y) < 0.05){ vel_y = 0 };
 	
 	//Confirma colisão em alta velocidade para o X
 	var _passo_x = vel_x
@@ -138,4 +149,41 @@ function atirar(_mira){
 /// @desc Sinaliza a morte do player
 function game_over() {
 	estado_trocar(GAME.MORTE);
+}
+
+/// @desc Limpa todas balas da tela
+/// @arg {BOOL} _player_included Limpa as balas do player também se for true
+function limpar_balas(_player_included = true)
+{
+	with (obj_bullet) {
+		
+		if(_player_included){ instance_destroy() }
+		else
+		{
+			if(owner_type == BULLET_OWNER.CLONE)
+			{
+				instance_destroy()
+			}
+		}
+	
+	}
+}
+
+/// @desc Dasha na diração do movimento ou mouse
+/// @arg {REAL} _move_x	Input Horizontal
+/// @arg {REAL} _move_y	Input Vertival
+/// @arg {REAL} _mira Angulo da mira
+function dashear(_move_x, _move_y, _mira)
+{
+	if (!has_dash ||
+		dash_cooldown > 0 ||
+		dash_timer > 0) { exit; }
+		
+	//Checa se tem uma direção
+	var _parado = (_move_x == 0 && _move_y == 0);
+	dash_dir = _parado ? _mira : point_direction(0, 0, _move_x, _move_y);
+	
+	dash_timer = global.dash_duration;
+	dash_cooldown = global.dash_cooldown;
+	invul_timer = global.dash_duration + global.dash_invul_buffer
 }

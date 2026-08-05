@@ -2,6 +2,11 @@
 function loop_end() {
 	if (global.player == noone || !global.gravando) exit;
 	
+	//Adiciona os pontos de tempo
+	global.pontos_tempo = floor(loop_ms_restantes() * global.pontos_segundo / 1000);
+	global.pontos += global.pontos_tempo;
+	global.kills_loop = 0;
+	
 	global.gravando = false;
 	
 	var _loop = {
@@ -9,12 +14,15 @@ function loop_end() {
 		buffer: global.player.recording_buffer,
 		spawn_x: global.player.loop_start_x,
 		spawn_y: global.player.loop_start_y,
-		max_hp: global.player.max_hp
+		max_hp: global.player.max_hp,
+		has_dash: global.player.has_dash
 	};
 	
 	array_push(loops, _loop);
 	
-	estado_trocar(GAME.GAP);
+	limpar_balas();
+	
+	estado_trocar(GAME.LIVRE);
 }
 
 /// @desc Inicia a gravação do loop

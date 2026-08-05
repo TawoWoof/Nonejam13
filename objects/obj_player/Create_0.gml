@@ -19,6 +19,12 @@ decel = _stats.decel;					//Desaceleração
 vel_x = _stats.vel_x;					//Velocidade Atual do eixo X
 vel_y = _stats.vel_y;					//Velocidade Atual do eixo Y
 
+has_dash = _stats.has_dash;				//Tem dash?
+dash_speed = _stats.dash_speed;			//Velocidade do dash
+dash_timer = 0;							//Frames DO DASH
+dash_cooldown = 0;						//Cooldown do dash
+dash_dir = 0;							//Direção do dash
+invul_timer = 0;						//Invulnerabilidade
 
 type = BULLET_OWNER.PLAYER;		//Define o time
 mira_atual = 0;					//Onde está mirando
@@ -32,4 +38,4 @@ record_step = 0;					//Step de gravação atual
 
 global.player = id;					//Salva seu ID como player
 
-last_input = { move_x: 0, move_y: 0, mira: 0, atirando: false }; //Último input. É mais pra debug, tem informação pra evitar crash
+last_input = { move_x: 0, move_y: 0, mira: 0, atirando: false, dash: false }; //Último input. É mais pra debug, tem informação pra evitar crash

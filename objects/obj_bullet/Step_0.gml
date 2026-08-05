@@ -20,7 +20,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 	
 	//Descobre qual clone foi atingido
 	var _alvo = instance_place(x, y, obj_clone);
-	if (_alvo != noone) {
+	if (_alvo != noone && _alvo.invul_timer <= 0) {
 		_alvo.hp -= dmg;
 		if (_alvo.hp <= 0) {
 			die(_alvo)
@@ -31,7 +31,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 } else if (owner_type == BULLET_OWNER.CLONE) {
 	
 	//Checa colisão com o player
-	if (place_meeting(x, y, obj_player)) {
+	if (global.player.invul_timer <= 0 && place_meeting(x, y, obj_player)) {
 		global.player.hp -= dmg;
 		if (global.player.hp <= 0) {
 			game_over();
