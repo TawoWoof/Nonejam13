@@ -1,43 +1,124 @@
 if (!jogo_rodando()) exit;
 
+//Ataque Teleguiado
+if (curva > 0)
+{
+	var _dono = (owner_type == BULLET_OWNER.PLAYER) ? obj_clone : obj_player
+	var _alvo_curva = instance_nearest(x, y, _dono)
+	
+	if (_alvo_curva != noone)
+	{
+		var _dif = angle_difference(point_direction(x, y, _alvo_curva.x, _alvo_curva.y), bullet_dir)
+		
+		bullet_dir += clamp(_dif, -curva, curva)
+		image_angle = bullet_dir
+	}
+}
+
 //Movimentação do tiro
 //Calcula o ângulo
 var _move_x = lengthdir_x(bullet_speed, bullet_dir);
 var _move_y = lengthdir_y(bullet_speed, bullet_dir);
 
-//Efetua a Movimentação
-x += _move_x;
-y += _move_y;
 
 //Colisão com parede
-if (place_meeting(x, y, obj_wall)) {
-	instance_destroy();
-	exit;
+//Precisa ser por eixo pra calcular o bounce
+
+//Colisão X
+if (place_meeting(x + _move_x, y, obj_wall))
+{
+	if (bounces_left > 0)
+	{
+		bounces_left -= 1;
+		bullet_dir = 180 - bullet_dir;
+		image_angle = bullet_dir;
+		_move_x = lengthdir_x(bullet_speed, bullet_dir)
+	}
+	else
+	{
+		instance_destroy();
+		exit
+	}
 }
+x += _move_x;
+
+//Colisão Y
+if (place_meeting(x, y + _move_y, obj_wall))
+{
+	if (bounces_left > 0)
+	{
+		bounces_left -= 1;
+		bullet_dir = -bullet_dir;
+		image_angle = bullet_dir;
+		_move_y = lengthdir_y(bullet_speed, bullet_dir)
+	}
+	else
+	{
+		instance_destroy();
+		exit
+	}
+}
+y += _move_y;
 
 //Busca acertos
 if (owner_type == BULLET_OWNER.PLAYER) {
 	
-	//Descobre qual clone foi atingido
 	var _alvo = instance_place(x, y, obj_clone);
-	if (_alvo != noone && _alvo.invul_timer <= 0) {
+	
+	if (_alvo == noone)
+	{
+		ultimo_alvo = noone
+	}
+	else if (_alvo != ultimo_alvo && _alvo.invul_timer <= 0) {
+		
+		ultimo_alvo = _alvo;
+		
 		_alvo.hp -= dmg;
+		
+		if (explosao > 0){ explodir(x, y, explosao, dmg, owner_type, _alvo) }
+		
 		if (_alvo.hp <= 0) {
 			die(_alvo)
 		}
-		instance_destroy();
-		exit;
+		
+		if (pierce_left > 0)
+		{
+			pierce_left -= 1;
+		}else{
+			instance_destroy();
+			exit;
+		}
 	}
 } else if (owner_type == BULLET_OWNER.CLONE) {
 	
-	//Checa colisão com o player
-	if (global.player.invul_timer <= 0 && place_meeting(x, y, obj_player)) {
-		global.player.hp -= dmg;
-		if (global.player.hp <= 0) {
+	var _tocando = place_meeting(x, y, obj_player)
+	
+	if (!_tocando)
+	{
+		ja_atingiu_player = false
+	}else if (!ja_atingiu_player) {
+		
+		ja_atingiu_player = true;
+		
+		if(global.player.invul_timer <= 0)
+		{
+			global.player.hp -= dmg;
+			global.player.invul_timer = global.hit_invul;
+			
+			if (explosao > 0){ explodir(x, y, explosao, dmg, owner_type, global.player) }
+			
+			if (global.player.hp <= 0) {
 			game_over();
 		}
-		instance_destroy();
-		exit;
+		}
+		
+		if (pierce_left > 0)
+		{
+			pierce_left -= 1;
+		}else{
+			instance_destroy()
+			exit
+		}
 	}
 }
 

@@ -1,5 +1,8 @@
 ///@desc Spawna clones baseado na gravação dos loops
 function spawn_clones() {
+	//Sonolento
+	var _sono = instance_exists(global.player) ? global.player.sono : 0;
+	
 	//Loopa entre todos loops existentes
 	for (var i = 0; i < array_length(loops); i++) {
 		var _loop = loops[i];
@@ -12,6 +15,8 @@ function spawn_clones() {
 		
 		stats_escrever(_clone, stats_montar(_loop.cartas, true));
 		_clone.hp = _clone.max_hp;
+		_clone.delay = _clone.delay + _sono;
+		_clone.delay_max = _clone.delay;
 		
 		//Se existe um buffer no clone, cria um target para a mira
 		if (array_length(_loop.buffer) > 0) {
@@ -30,15 +35,75 @@ function die(_alvo)
 	global.pontos += _pontos;
 	global.pontos_abates += _pontos
 	
+	//guarda a posição antes de destruir
+	var _mx = _alvo.x
+	var _my = _alvo.y
+	
 	//Destrói o clone e a arma
 	instance_destroy(_alvo.gun);
 	instance_destroy(_alvo);
 	
 	global.kills_loop += 1;
 	
+	//passivos de abate
+	if (instance_exists(global.player))
+	{
+		with (global.player)
+		{
+			if (sanguessuga > 0)
+			{
+				kills_cura += 1;
+				
+				if (kills_cura >= max(1, 6 - sanguessuga))
+				{
+					kills_cura = 0;
+					hp = min(hp + 1, max_hp)
+				}
+			}
+			
+			if (tempo_por_kill > 0 && global.loop_tempo != TIMELESS)
+			{
+				global.loop_tempo += tempo_por_kill;
+			}
+			
+			if (estilhacos > 0)
+			{
+				estilhacar(_mx, _my, estilhacos)
+			}
+		}
+	}
+	
 	//Se for o último clone do loop, avisa ao controlador que o player terminou
 	if (instance_number(obj_clone) == 0) {
 		with (global.loop_master) { loop_end(); }
+	}
+}
+
+// @desc Dispara tiros em circulo a partir de um ponto
+/// @arg {REAL} _x
+/// @arg {REAL} _y
+/// @arg {REAL} _n
+function estilhacar(_x, _y, _n)
+{
+	if (_n <= 0) exit;
+	
+	var _passo = 360 / _n
+	
+	for (var i = 0; i < _n; i++)
+	{
+		var _b = instance_create_layer(_x, _y, layer, obj_bullet);
+		
+		_b.bullet_dir = _passo * i;
+		_b.image_angle = _b.bullet_dir;
+		_b.bullet_speed = bullet_speed;
+		_b.dmg = bullet_dmg;
+		_b.owner_type = BULLET_OWNER.PLAYER;
+		_b.sprite_index = spr_bullet_player;
+		_b.image_xscale = bullet_scale;
+		_b.image_yscale = bullet_scale;
+		_b.bounces_left = ricochete;
+		_b.pierce_left = perfuracao;
+		_b.curva = mira_curva;
 	}
 }
 
@@ -52,8 +117,10 @@ function playback_reiniciar() {
 	mira_inicial = mira_atual;
 	mira_alvo = buffer[0].mira;
 	
-
-	delay = global.delay;	
+	var _sono = instance_exists(global.player) ? global.player.sono : 0;
+	
+	delay = global.delay + _sono;	
+	delay_max = delay;	
 	cooldown = 0;
 	dash_timer = 0;
 	dash_cooldown = 0;

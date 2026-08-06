@@ -136,6 +136,12 @@ function atirar(_mira){
 	
 	var _spr = (type == BULLET_OWNER.PLAYER) ? spr_bullet_player : spr_bullet_enemy
 	
+	var _dmg = bullet_dmg
+	if (berserk > 0 && max_hp > 0)
+	{
+		_dmg += floor(berserk * (1 - hp / max_hp))
+	}
+	
 	var _espaco = sprite_get_width(_spr) * bullet_scale;
 	var _raio = (bullet_count > 1) ? (bullet_count * _espaco) / (2 * pi) : 0;
 	
@@ -158,6 +164,10 @@ function atirar(_mira){
 		_bullet.sprite_index = (type == BULLET_OWNER.PLAYER) ? spr_bullet_player : spr_bullet_enemy;
 		_bullet.image_xscale = bullet_scale
 		_bullet.image_yscale = bullet_scale
+		_bullet.bounces_left = ricochete
+		_bullet.pierce_left = perfuracao
+		_bullet.explosao = explosao
+		_bullet.curva = mira_curva
 	}
 	
 	//chama o shake se for o player
@@ -165,7 +175,7 @@ function atirar(_mira){
 	if (type == BULLET_OWNER.PLAYER) { shake_add(global.shake_tiro, _mira); }
 	
 	//Ativa o cooldown
-	cooldown = fire_rate;
+	cooldown = max(2, round(fire_rate * (1 - adrenalina * urgencia_relogio())));
 }
 
 /// @desc Sinaliza a morte do player
@@ -271,4 +281,55 @@ function interativo_atualizar()
 function interativo_ativo()
 {
 	return (global.interacao_alvo == id)
+}
+
+/// @desc fração de urgencia do relógio (aumentar a cadencia de tiro)
+function urgencia_relogio()
+{
+	if (global.estado != GAME.LOOP) return 0;
+	if (global.loop_tempo == TIMELESS || global.loop_tempo <= 0) return 0;
+	
+	return clamp(1 - (loop_steps_restantes() / global.loop_tempo), 0, 1);
+}
+
+/// @desc Dano em área
+/// @arg {REAL} _x
+/// @arg {REAL} _y
+/// @arg {REAL} _raio
+/// @arg {REAL} _dmg
+/// @arg {REAL} _dono
+/// @arg {Id.Instance} _ignorar
+function explodir(_x, _y, _raio, _dmg, _dono, _ignorar = noone)
+{
+	if (_raio <= 0) exit
+	
+	shake_add(global.shake_explosao, irandom(359));
+	
+	if (_dono == BULLET_OWNER.CLONE)
+	{
+		var _p = global.player;
+		
+		if (	instance_exists(_p)
+				&& _p != _ignorar
+				&& _p.invul_timer <= 0
+				&& point_distance(_x, _y, _p.x, _p.y) <= _raio)
+		{
+			_p.hp -= dmg;
+			_p.invul_timer = global.hit_invul;
+			
+			if (_p.hp <= 0){ game_over() }
+		}
+		exit
+	}
+	
+	for(var i = instance_number(obj_clone) - 1; i > 0; i-- )
+	{
+		var _c = instance_find(obj_clone, i);
+		
+		if (_c == _ignorar || _c.invul_timer > 0) continue;
+		if (point_distance(_x, _y, _c.x, _c.y) > _raio) continue;
+		
+		_c.hp -= _dmg;
+		if (_c.hp <= 0){ die(_c) }
+	}
 }

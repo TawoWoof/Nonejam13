@@ -15,6 +15,7 @@ dash_timer = 0;							//Frames DO DASH
 dash_cooldown = 0;						//Cooldown do dash
 dash_dir = 0;							//Direção do dash
 invul_timer = 0;						//Invulnerabilidade
+kills_cura = 0;							//Abates acumulados para a cura
 
 
 type = BULLET_OWNER.PLAYER;		//Define o time

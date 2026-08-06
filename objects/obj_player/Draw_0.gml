@@ -1,5 +1,9 @@
 draw_self()
 
+draw_set_colour(c_black)
+draw_text(x, y, hp)
+draw_set_colour(-1)
+
 if(!global.debug) exit;
 
 draw_set_font(fnt_debug);

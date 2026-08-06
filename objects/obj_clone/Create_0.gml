@@ -22,6 +22,8 @@ dash_timer = 0;							//Frames DO DASH
 dash_cooldown = 0;						//Cooldown do dash
 dash_dir = 0;							//Direção do dash
 invul_timer = 0;						//Invulnerabilidade
+delay = 0;								//Delay do começo
+delay_max = 0;							//Delay Máximo
 
 type = BULLET_OWNER.CLONE;				//Time
 mira_atual = 0;							//Onde está mirando atualmente

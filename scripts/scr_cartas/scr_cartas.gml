@@ -192,7 +192,8 @@ function cartas_definir()
 				nome: "Ricochete",
 				desc: "Suas balas ricocheteam nas paredes +1",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.ricochete += 1 }
 			}),
 			
 			carta_criar(
@@ -201,7 +202,8 @@ function cartas_definir()
 				nome: "Mira Estável",
 				desc: "Reduz o Spread dos tiros",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.COMUM
+				raridade: CARTA_RAR.COMUM,
+				aplicar: function(_s){ _s.bullet_spread = max(4, _s.bullet_spread - 6) }
 			}),
 		#endregion
 	
@@ -212,7 +214,8 @@ function cartas_definir()
 				nome: "Perfuração",
 				desc: "Sua bala atravessa +1 clone",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.INCOMUM
+				raridade: CARTA_RAR.INCOMUM,
+				aplicar: function(_s){ _s.perfuracao += 1 }
 			}),
 			
 			carta_criar(
@@ -223,7 +226,8 @@ function cartas_definir()
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
 				heranca: HERANCA.NENHUMA,
-				max_copias:	5
+				max_copias:	5,
+				aplicar: function(_s){ _s.sanguessuga += 1 }
 			}),
 			
 			carta_criar(
@@ -233,7 +237,8 @@ function cartas_definir()
 				desc: "Cada abate devolve tempo ao relógio",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
-				heranca: HERANCA.NENHUMA
+				heranca: HERANCA.NENHUMA,
+				aplicar: function(_s){ _s.tempo_por_kill += 60 }
 			}),
 			
 			carta_criar(
@@ -242,7 +247,8 @@ function cartas_definir()
 				nome: "Adrenalina",
 				desc: "Quanto menor o tempo restante, maior a cadência de fogo",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.INCOMUM
+				raridade: CARTA_RAR.INCOMUM,
+				aplicar: function(_s){ _s.adrenalina += 0.35 }
 			}),
 			
 			carta_criar(
@@ -252,7 +258,8 @@ function cartas_definir()
 				desc: "Quanto menor sua vida, mais dano você causa",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
-				requisito: function() { /* Ter pelo menos 3 de vida máxima*/ }
+				requisito: function() { return (instance_exists(global.player) && global.player.max_hp >= 5 )},
+				aplicar: function(_s){ _s.berserk += 2 }
 			}),
 		#endregion
 	
@@ -263,7 +270,10 @@ function cartas_definir()
 				nome: "Tiro Explosivo",
 				desc: "Quando os tiros acertam algo, geram uma explosão",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.RARA
+				raridade: CARTA_RAR.RARA,
+				heranca: HERANCA.PARCIAL,
+				aplicar: function(_s){ _s.explosao += 24 },
+				aplicar_clone: function(_s){ _s.explosao += 12 }
 			}),
 			
 			carta_criar(
@@ -274,7 +284,8 @@ function cartas_definir()
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.RARA,
 				heranca: HERANCA.NENHUMA,
-				max_copias:	1
+				max_copias:	1,
+				aplicar: function(_s){ _s.estilhacos = max(_s.estilhacos, 4) }
 			}),
 		#endregion
 	
@@ -288,7 +299,8 @@ function cartas_definir()
 				raridade: CARTA_RAR.LENDARIA,
 				heranca: HERANCA.NENHUMA,
 				max_copias:	1,
-				requisito: function() { /* Ter a carta passive_shards_1*/ }
+				requisito: function() { return (carta_copias("passive_shards_1") > 0 )},
+				aplicar: function(_s){ _s.estilhacos = max(_s.estilhacos, 8) }
 			}),
 			
 			carta_criar(
@@ -298,7 +310,8 @@ function cartas_definir()
 				desc: "Clones levam mais tempo para acordar",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.LENDARIA,
-				heranca: HERANCA.NENHUMA
+				heranca: HERANCA.NENHUMA,
+				aplicar: function(_s){ _s.sono += 60 }
 			}),
 			
 			carta_criar(
@@ -307,7 +320,8 @@ function cartas_definir()
 				nome: "Ataque Teleguiado",
 				desc: "Seus tiros curvam-se levemente em dirção ao alvo mais próximo",
 				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.LENDARIA
+				raridade: CARTA_RAR.LENDARIA,
+				aplicar: function(_s){ _s.mira_curva += 2 }
 			}),
 			
 			carta_criar(

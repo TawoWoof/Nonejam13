@@ -10,7 +10,7 @@ if (delay > 0)
 	delay--
 	
 	//Ajusta a arma para o angulo inicial enquanto espera o delay terminar
-	var _t = 1 - (delay / global.delay);
+	var _t = 1 - (delay / max(1, delay_max));
 	mira_atual = mira_inicial + angle_difference(mira_alvo, mira_inicial) * _t;
 	
 	exit
