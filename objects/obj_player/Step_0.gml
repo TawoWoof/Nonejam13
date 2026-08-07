@@ -1,4 +1,13 @@
+//Animação de morte roda com a gameplay já parada
+if (anim_morte)
+{
+	if (global.frame_ativo) { sprite_atualizar(0, 0); }
+	exit;
+}
+
 if (!jogo_rodando()) exit;
+
+if(flash_timer > 0){ flash_timer -= 1 }
 
 //Gravação do input
 var _input = {}; //Inicializa o input como Struct
@@ -20,6 +29,9 @@ empurrar();
 
 //setta a mira
 mira_atual = _input.mira
+
+//lê o nome da função krlh
+sprite_atualizar(_input.move_x, _input.move_y);
 
 //Reduz o cooldown de tiros
 if (cooldown > 0) { cooldown -= 1; }

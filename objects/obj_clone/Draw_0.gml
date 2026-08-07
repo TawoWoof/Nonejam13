@@ -1,5 +1,13 @@
-draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, cor_viva, image_alpha);
-
+if(flash_timer > 0)
+{
+	gpu_set_fog(true, global.flash_cor, 0, 0);
+	draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, cor_viva, alpha_atual);
+	gpu_set_fog(false, c_black, 0, 0);
+}
+else
+{
+	draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, cor_viva, alpha_atual);
+}
 if(!global.debug) exit;
 
 draw_set_font(fnt_debug);

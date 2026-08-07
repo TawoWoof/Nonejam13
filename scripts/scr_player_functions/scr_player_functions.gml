@@ -23,6 +23,16 @@ function mover(_move_x, _move_y) {
 		dash_timer -= 1;
 		vel_x = lengthdir_x(dash_speed, dash_dir);
 		vel_y = lengthdir_y(dash_speed, dash_dir);
+		
+		//rastro
+		if (dash_timer mod global.rastro_intervalo == 0)
+		{
+			var _rc = (type == BULLET_OWNER.PLAYER)
+				? make_colour_hsv(((dash_dur - dash_timer) * global.rastro_hue_passo) mod 256, 200, 255)
+				: cor;
+			
+			rastro_criar(x, y, sprite_index, image_index, image_xscale, image_yscale, image_angle, _rc);
+		}
 	}else{
 		var _dist = point_distance(0, 0, _move_x, _move_y);
 		if (_dist > 1)
@@ -127,7 +137,7 @@ function atirar(_mira){
 	if (cooldown > 0 || bullet_count <= 0){ exit };
 	
 	//Spawna a bala na posição correta
-	var _spawn_dist = (gun != noone) ? gun.orbita+gun.cano : 0;
+	var _spawn_dist = (gun != noone && instance_exists(gun)) ? gun.orbita + gun.cano : 0;
 	var _spawn_x = x + lengthdir_x(_spawn_dist, _mira);
 	var _spawn_y = y + lengthdir_y(_spawn_dist, _mira);
 	
@@ -176,6 +186,9 @@ function atirar(_mira){
 	//POR DISPARO, NÃO POR BALA
 	if (type == BULLET_OWNER.PLAYER) { shake_add(global.shake_tiro, _mira); }
 	
+	//Clarão no cano
+	if (gun != noone && instance_exists(gun)) { gun.flash_timer = global.muzzle_dur; }
+	
 	//Ativa o cooldown
 	cooldown = max(2, round(fire_rate * power(global.adrenalina_fator, adrenalina * urgencia_relogio())));
 }
@@ -186,6 +199,16 @@ function game_over() {
 	{
 		tinta_splatter(global.player.x, global.player.y, global.tinta_raio_morte * 1.4,
 			global.cor_player, global.tinta_gotas_morte, undefined, global.tinta_forca_morte);
+		
+		//Dispara a animação de queda e some com a arma
+		global.player.anim_morte = true;
+		global.player.image_index = 0;
+		
+		if (global.player.gun != noone && instance_exists(global.player.gun))
+		{
+			instance_destroy(global.player.gun);
+			global.player.gun = noone;
+		}
 	}
 	
 	estado_trocar(GAME.MORTE);

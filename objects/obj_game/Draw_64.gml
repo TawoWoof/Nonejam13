@@ -24,8 +24,15 @@ if (room == rm_base && global.estado == GAME.LOOP || global.estado == GAME.GAP |
 	var _tempo = loop_tempo_texto();
 	if (_tempo != "")
 	{
+		var _u = urgencia_visual();
+		
+		//Treme e esquenta conforme o tempo acaba
+		var _tx = random_range(-1, 1) * _u * global.relogio_tremor;
+		var _ty = random_range(-1, 1) * _u * global.relogio_tremor;
+		var _cr = merge_colour(c_white, global.vinheta_cor, _u);
+		
 		draw_set_halign(fa_center);
-			draw_text(_gw * 0.5, 14, _tempo)
+		draw_text_color(_gw * 0.5 + _tx, 14 + _ty, _tempo, _cr, _cr, _cr, _cr, 1);
 		draw_set_halign(fa_left);
 	}
 	
@@ -86,4 +93,21 @@ switch (global.estado) {
 }
 #endregion
 
+//Vinheta de tempo acabando (pulsa)
+var _uv = urgencia_visual();
+if (_uv > 0)
+{
+	var _pulso = 0.65 + 0.35 * sin(global.tick * global.vinheta_pulso);
+	vinheta_desenhar(_uv * _pulso, global.vinheta_cor);
+}
+
+//Transição de loop
+if (global.fade > 0)
+{
+	draw_set_alpha(global.fade);
+	draw_rectangle_color(0, 0, _gw, _gh, c_black, c_black, c_black, c_black, false);
+	draw_set_alpha(1);
+}
+
+draw_set_halign(fa_left);
 draw_set_font(-1);

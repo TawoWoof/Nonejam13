@@ -1,5 +1,17 @@
-draw_sprite_ext(sprite_index, image_index, round(x), round(y), image_xscale, image_yscale, image_angle, image_blend, image_alpha);
+var _m = global.morph * global.transicao_estica;
+var _mx = image_xscale * (1 + _m);
+var _my = image_yscale * (1 - _m);
 
+if(flash_timer > 0)
+{
+	gpu_set_fog(true, global.flash_cor, 0, 0)
+	draw_sprite_ext(sprite_index, image_index, x, y, _mx, _my, image_angle, c_white, image_alpha);
+	gpu_set_fog(false, c_black, 0, 0);
+}
+else
+{
+	draw_sprite_ext(sprite_index, image_index, x, y, _mx, _my, image_angle, c_white, image_alpha);
+}
 draw_set_colour(c_black)
 draw_text(x, y, hp)
 draw_set_colour(-1)

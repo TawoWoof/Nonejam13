@@ -77,6 +77,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		
 		_alvo.hp -= dmg;
 		_alvo.ultimo_hit_dir = bullet_dir;
+		_alvo.flash_timer = global.flash_dur;
 		
 		if (_alvo.hp > 0)
 		{
@@ -114,6 +115,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		{
 			global.player.hp -= dmg;
 			global.player.invul_timer = global.hit_invul;
+			global.player.flash_timer = global.flash_dur;
 			
 			if (explosao > 0){ explodir(x, y, explosao, dmg, owner_type, global.player) }
 			

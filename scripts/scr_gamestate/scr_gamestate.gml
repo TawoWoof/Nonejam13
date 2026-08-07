@@ -42,6 +42,9 @@ function estado_passo() {
 }
 /// @desc Chama a gameplay
 function jogo_rodando() {
+	
+	if (!global.frame_ativo) return false;
+	
 	return (	global.estado != GAME.MENU
 			&&  global.estado != GAME.MORTE
 			&&  global.estado != GAME.CUTSCENE
@@ -72,6 +75,8 @@ function passo_menu() {
 function entrar_gap() {
 	global.gravando = false;
 	
+	if (global.loop_atual <= 0) { global.fade = 1; }
+	
 	if (room != rm_base) { room_goto(rm_base); }
 }
 
@@ -79,11 +84,25 @@ function passo_gap() {
 	
 	if (room != rm_base){ exit };
 	if (!instance_exists(global.loop_master) || !instance_exists(global.player)){ exit };
-	if (global.estado_anterior == GAME.MENU){ estado_trocar(GAME.LOOP); }
 	
-	var _pulou = (global.estado_timer >= global.gap_min && keyboard_check_pressed(vk_anykey));
+	var _espera = (global.loop_atual <= 0) ? 0 : global.loop_gap;
 	
-	if (global.estado_timer < global.loop_gap && !_pulou){ exit };
+	if (_espera > 0)
+	{
+
+		if (global.estado_timer >= global.gap_min && keyboard_check_pressed(vk_anykey))
+		{
+			global.estado_timer = max(global.estado_timer, _espera - global.transicao_dur);
+		}
+		
+		var _falta = _espera - global.estado_timer;
+		global.fade = clamp(1 - (_falta / global.transicao_dur), 0, 1);
+		global.morph = -global.fade;
+	}
+	
+	if (global.estado_timer < _espera){ exit };
+	
+	global.fade = 1;
 	
 	if (global.cartas_disponiveis > 0)
 	{
@@ -111,11 +130,23 @@ function entrar_loop() {
 	global.pontos_abates = 0;
 	global.pontos_tempo = 0;
 	
+	//Chega com efeitos de transição
+	global.fade = 1;
+	global.morph = 1;
+	
+	limpar_balas()
+	
 	limpar_balas()
 }
 
 function passo_loop() {
 
+	if (global.fade > 0)
+	{
+		global.fade = max(0, global.fade - 1 / global.transicao_dur);
+		global.morph = global.fade;
+	}
+	
 	if (global.loop_tempo == TIMELESS) exit;
 	
 	//Relógio do loop
@@ -125,6 +156,8 @@ function passo_loop() {
 }
 
 function entrar_morte() {
+	global.fade = 0;
+	global.morph = 0;
 	global.gravando = false;
 }
 
@@ -207,16 +240,47 @@ function loop_tempo_texto() {
 
 function entrar_freeze()
 {
+	global.freeze_saindo = false;
+	global.morph = 0;
+	
 	global.cartas_opcoes = cartas_sortear_varias(global.cartas_opcoes_n);
 }
 
 function passo_freeze()
 {
+	if (!global.freeze_saindo && global.fade > 0)
+	{
+		global.fade = max(0, global.fade - 1 / global.transicao_dur);
+		exit;
+	}
+	
+	if (global.freeze_saindo)
+	{
+		global.fade = min(1, global.fade + 1 / global.transicao_dur);
+		global.morph = -global.fade;
+		
+		if (global.fade >= 1)
+		{
+			global.freeze_saindo = false;
+			
+			//Outra carta pendente reabre a escolha
+			if (global.cartas_disponiveis > 0)
+			{
+				estado_trocar(GAME.FREEZE);
+				exit;
+			}
+			
+			estado_trocar(GAME.LOOP);
+		}
+		
+		exit;
+	}
+	
 	var _n = array_length(global.cartas_opcoes);
 	
 	if(_n == 0)
 	{
-		estado_trocar(GAME.LOOP)
+		global.freeze_saindo = true;
 		exit
 	}
 	
@@ -228,14 +292,7 @@ function passo_freeze()
 		global.cartas_disponiveis -= 1;
 		
 		global.cartas_opcoes = []
-		
-		if (global.cartas_disponiveis > 0)
-		{
-			estado_trocar(GAME.FREEZE);
-			exit;
-		}
-		
-		estado_trocar(GAME.LOOP);
+		global.freeze_saindo = true;
 		exit
 	}
 }
@@ -252,6 +309,10 @@ function cartas_faltam()
 /// Global sobrevive à troca de room, então precisa de reset explícito
 function run_resetar()
 {
+	global.fade = 0;
+	global.morph = 0;
+	global.freeze_saindo = false;;
+	
 	global.inventario = start_inventario();
 	global.cartas_disponiveis = 0;
 	global.cartas_opcoes = [];
@@ -265,4 +326,14 @@ function run_resetar()
 	global.kills_loop = 0;
 	
 	global.gravando = false;
+	global.hitstop = 0;
+}
+
+/// @desc Urgência do relógio para efeitos visuais (Separar da adrenalina)
+function urgencia_visual()
+{
+	if (global.estado != GAME.LOOP) return 0;
+	if (global.loop_tempo == TIMELESS) return 0;
+	
+	return power(0.5, loop_steps_restantes() / global.vinheta_meia_vida);
 }

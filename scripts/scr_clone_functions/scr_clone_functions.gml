@@ -37,6 +37,7 @@ function spawn_clones() {
 ///@arg {Asset.GMObject}  _alvo  Alvo atingido
 function die(_alvo)
 {
+	
 	//Marca a pontuação do clone
 	var _bonus = instance_exists(global.player) ? global.player.pontos_bonus : 0;
 	var _pontos = clone_valor(_alvo.loop_index, _bonus)
@@ -54,13 +55,18 @@ function die(_alvo)
 	
 	
 	//Destrói o clone e a arma
-	instance_destroy(_alvo.gun);
+	if (_alvo.gun != noone && instance_exists(_alvo.gun)) { instance_destroy(_alvo.gun); }
 	instance_destroy(_alvo);
 	
 	tinta_splatter(_mx, _my, global.tinta_raio_morte, _cor,
 		global.tinta_gotas_morte, _dir, global.tinta_forca_morte)
-		
-	tinta_corpo(global.tinta_spr_corpo, 0, _mx, _my, _xs, _ys, irandom(359), _cor);
+	
+	var _frame_corpo = sprite_get_number(global.tinta_spr_corpo) - 1;
+	
+	tinta_corpo(global.tinta_spr_corpo, _frame_corpo, _mx, _my, _xs, _ys, irandom(359), _cor);
+	
+	if (_pontos > 0){ popup_criar(_mx, _my - 10, string(_pontos), _cor) }
+	zoom_add(global.zoom_kill);
 	
 	global.kills_loop += 1;
 	
@@ -93,8 +99,16 @@ function die(_alvo)
 	}
 	
 	//Se for o último clone do loop, avisa ao controlador que o player terminou
-	if (instance_number(obj_clone) == 0) {
-		with (global.loop_master) { loop_end(); }
+	if (instance_number(obj_clone) == 0)
+	{
+		hitstop_add(global.hitstop_final);
+		
+		with(obj_loop_master){ loop_end(); }
+		
+	} else {
+
+		hitstop_add(global.hitstop_kill);
+
 	}
 }
 

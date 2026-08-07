@@ -1,5 +1,17 @@
+var _cor = (player.type == BULLET_OWNER.CLONE) ? player.cor_viva : c_white;
+var _alpha = (player.type == BULLET_OWNER.CLONE) ? player.alpha_atual : image_alpha;
+
 draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle,
-	(player.type == BULLET_OWNER.CLONE) ? player.cor_viva : c_white, image_alpha);
+	_cor, _alpha);
+
+//Clarão na ponta do cano
+if (flash_timer > 0)
+{
+	draw_sprite_ext(spr_muzzle_flash, 0,
+		x + lengthdir_x(cano, image_angle),
+		y + lengthdir_y(cano, image_angle),
+		1, image_yscale, image_angle, c_white, 1);
+}
 
 if(!global.debug) exit;
 

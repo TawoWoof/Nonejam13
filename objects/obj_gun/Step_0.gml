@@ -1,6 +1,8 @@
 //Sem player ou sem dono, ignorar o step
 if (player == noone || !instance_exists(player)) exit;
 
+if (global.frame_ativo && flash_timer > 0) { flash_timer -= 1; }
+
 //Muda o angulo
 var _angle = player.mira_atual;
 

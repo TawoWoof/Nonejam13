@@ -2,6 +2,7 @@
 gun = instance_create_layer(x, y, layer, obj_gun)
 gun.player = id
 cor = global.cor_player;		//Cor das marcas de bala
+
 //Inicialização de stats. Edições em start_stats()
 stats_escrever(id, start_stats())
 
@@ -29,7 +30,20 @@ recording_buffer = [];				//Buffer (Lugar onde vai gravar)
 record_step = 0;					//Step de gravação atual
 
 global.player = id;					//Salva seu ID como player
+flash_timer = 0;
 
 last_input = { move_x: 0, move_y: 0, mira: 0, atirando: false, dash: false }; //Último input. É mais pra debug, tem informação pra evitar crash
 
 stats_recalcular();
+
+//Animação
+image_speed = 0;					//Avanço manual, pra congelar junto com o hitstop
+facing = 1;							//1 = direita, -1 = esquerda
+facing_mira = 1;					//Lado em que a arma está
+pouso_timer = 0;					//Frames restantes de aterrissagem do dash
+anim_morte = false;
+
+spr_idle  = spr_player;
+spr_walk  = spr_player_walk;
+spr_dash  = spr_player_dash;
+spr_morte = spr_player_death;

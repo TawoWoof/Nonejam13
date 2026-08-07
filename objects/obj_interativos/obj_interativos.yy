@@ -9,8 +9,8 @@
   "name":"obj_interativos",
   "overriddenProperties":[],
   "parent":{
-    "name":"Cenário",
-    "path":"folders/Objects/Cenário.yy",
+    "name":"Controladores",
+    "path":"folders/Objects/Controladores.yy",
   },
   "parentObjectId":null,
   "persistent":false,

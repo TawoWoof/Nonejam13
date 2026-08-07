@@ -17,3 +17,9 @@ shake_vel_y = 0;
 shake_forca = 1;		//rigidez da mola: maior = volta mais rápido, tremor mais agudo
 shake_amort = 0.5;		//Duração (1 = infinito)
 shake_max = 30;			//Limite do recoil
+
+//Zoom punch
+zoom = 0;
+zoom_vel = 0;
+view_base_w = camera_get_view_width(view_camera[0]);
+view_base_h = camera_get_view_height(view_camera[0]);

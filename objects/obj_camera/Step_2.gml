@@ -5,7 +5,6 @@ var _w = camera_get_view_width(_cam);
 var _h = camera_get_view_height(_cam);
 
 //Evita retroalimentação da posição do mouse
-//Evita retroalimentação da posição do mouse
 var _rx = clamp(window_mouse_get_x() / max(1, window_get_width()), 0, 1) - 0.5;
 var _ry = clamp(window_mouse_get_y() / max(1, window_get_height()), 0, 1) - 0.5;
 
@@ -37,5 +36,17 @@ shake_y += shake_vel_y;
 if (abs(shake_x) < 0.05 && abs(shake_vel_x) < 0.05) { shake_x = 0; shake_vel_x = 0; }
 if (abs(shake_y) < 0.05 && abs(shake_vel_y) < 0.05) { shake_y = 0; shake_vel_y = 0; }
 
-//Centro -> canto, arredondado pro grid de pixel (senão a cena inteira cintila)
-camera_set_view_pos(_cam, round(cam_x - _w * 0.5 + shake_x), round(cam_y - _h * 0.5 + shake_y));
+//Zoom punch
+zoom_vel -= zoom * global.zoom_mola;
+zoom_vel *= global.zoom_amort;
+zoom += zoom_vel;
+
+if (abs(zoom) < 0.0005 && abs(zoom_vel) < 0.0005) { zoom = 0; zoom_vel = 0; }
+
+var _zw = round(view_base_w * (1 - zoom));
+var _zh = round(view_base_h * (1 - zoom));
+
+camera_set_view_size(_cam, _zw, _zh);
+
+//Centro não canto, arredondado pro grid de pixel
+camera_set_view_pos(_cam, round(cam_x - _zw * 0.5 + shake_x), round(cam_y - _zh * 0.5 + shake_y));
