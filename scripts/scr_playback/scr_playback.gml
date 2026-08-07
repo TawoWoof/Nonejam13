@@ -26,12 +26,6 @@ function loop_end() {
 	
 	limpar_balas();
 	
-	if (global.cartas_disponiveis > 0)
-	{
-		estado_trocar(GAME.FREEZE);
-		exit
-	}
-	
 	estado_trocar(GAME.GAP);
 }
 
@@ -49,6 +43,8 @@ function loop_start()
 	}
 	global.player.x = _pos.x;
 	global.player.y = _pos.y;
+	
+	with (global.player) { desencavar(); }
 	
 	//Reseta a gravação do player
 	global.player.recording_buffer = [];
@@ -74,17 +70,21 @@ function spawn_player(_dist = 128) {
 	var _melhor_y = y;
 	var _melhor_folga = -1;
 	
+	var _mask_player = mask_index;
+	mask_index = spr_clone
+	
+	var _margem = 32;
+	
 	for (var t = 0; t < _try; t++)
 	{
-		var _try_x = irandom(room_width);
-		var _try_y = irandom(room_height);
+		var _try_x = irandom_range(_margem, room_width - _margem);
+		var _try_y = irandom_range(_margem, room_height - _margem);
 		
 		//Checa se está fora da parede
 		if (place_meeting(_try_x, _try_y, obj_wall)){ continue }
 		
 		//Checa se está muito perto de alguma entidade
 		var _folga = room_width + room_height;
-		var _clones = instance_number(obj_clone);
 		
 		with (obj_clone)
 		{
@@ -102,6 +102,8 @@ function spawn_player(_dist = 128) {
 		//Folga suficiente? Para de procurar
 		if (_folga >= _dist) break;
 	}
+	
+	mask_index = _mask_player;
 	
 	//Se não, desiste da vida
 	return { x: _melhor_x, y: _melhor_y };

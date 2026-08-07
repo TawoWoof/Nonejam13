@@ -41,8 +41,14 @@ facing = 1;							//1 = direita, -1 = esquerda
 facing_mira = 1;					//Lado em que a arma está
 pouso_timer = 0;
 anim_morte = false;
+anim_fase = random(6.28);			//Fase do sinewave
+anim_esticar = 0;					//Deformação atual = + largo e baixo, - fino e alto
+anim_girar = 0;						//Rotação visual
+anim_impacto = 0;					//Squash residual de batida em parede
 
 spr_idle  = spr_clone;
 spr_walk  = spr_clone_walk;
 spr_dash  = spr_clone_dash;
 spr_morte = spr_clone_death;
+
+poeira_tick = 0;

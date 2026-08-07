@@ -74,3 +74,20 @@ function vinheta_desenhar(_forca, _cor)
 	draw_vertex_colour(_w - _e, 0, _cor, 0);      draw_vertex_colour(_w - _e, _h, _cor, 0);
 	draw_primitive_end();
 }
+
+/// @desc Solta uma nuvenzinha de poeira
+/// @arg {REAL} _x
+/// @arg {REAL} _y
+/// @arg {REAL} _dir Direção do sopro
+/// @arg {REAL} _forca Velocidade inicial
+function poeira_criar(_x, _y, _dir, _forca)
+{
+	var _p = instance_create_depth(_x, _y, global.poeira_depth, obj_poeira);
+	
+	_p.dir = _dir + random_range(-global.poeira_cone, global.poeira_cone);
+	_p.vel = _forca * random_range(0.6, 1.2);
+	_p.raio = global.poeira_raio_ini;
+	_p.raio_alvo = global.poeira_raio_fim * random_range(0.7, 1.3);
+	
+	return _p;
+}

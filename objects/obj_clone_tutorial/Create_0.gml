@@ -13,7 +13,7 @@ acordou = true;
 spr_idle  = spr_clone_nogun;
 spr_walk  = spr_clone_nogun;
 spr_dash  = spr_clone_nogun;
-spr_morte = spr_clone_nogun;
+spr_morte = spr_clone_death;
 
 sprite_index = spr_clone_nogun;
 

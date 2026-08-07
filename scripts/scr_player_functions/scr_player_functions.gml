@@ -18,8 +18,10 @@ function mover(_move_x, _move_y) {
 	if (dash_cooldown > 0) { dash_cooldown -= 1 }
 	if (invul_timer > 0 ) { invul_timer -=1 }
 	
+	//DASH
 	if (dash_timer > 0)
 	{
+		
 		dash_timer -= 1;
 		vel_x = lengthdir_x(dash_speed, dash_dir);
 		vel_y = lengthdir_y(dash_speed, dash_dir);
@@ -32,6 +34,13 @@ function mover(_move_x, _move_y) {
 				: cor;
 			
 			rastro_criar(x, y, sprite_index, image_index, image_xscale, image_yscale, image_angle, _rc);
+		}
+		
+		//poeira
+		
+		repeat (global.poeira_dash_n)
+		{
+			poeira_criar(x, y + global.poeira_offset_y, dash_dir + 180, global.poeira_dash_forca);
 		}
 	}else{
 		var _dist = point_distance(0, 0, _move_x, _move_y);
@@ -58,21 +67,53 @@ function mover(_move_x, _move_y) {
 		if (abs(vel_y) < 0.05){ vel_y = 0 };
 	}
 	
+	var _preso = place_meeting(x, y, obj_wall);
+	
 	//Confirma colisão em alta velocidade para o X
-	var _passo_x = vel_x
-	while (_passo_x != 0 && place_meeting(x + _passo_x, y, obj_wall)) {
-		 _passo_x = (abs(_passo_x) < 1) ? 0 : _passo_x - sign(_passo_x);
+	var _passo_x = vel_x;
+	while(!_preso && _passo_x != 0 && place_meeting(x + _passo_x, y, obj_wall))
+	{
+		_passo_x = (abs(_passo_x) < 1) ? 0 : _passo_x - sign(_passo_x);
 	}
-	if (_passo_x != vel_x) vel_x = 0;
+	if (_passo_x != vel_x){
+		bater_parede(abs(vel_x), (vel_x > 0) ? 0 : 180);
+		vel_x = 0;
+		};
 	x += _passo_x
 	
 	//Confirma colisão em alta velocidade para o Y
 	var _passo_y = vel_y;
-	while (_passo_y != 0 && place_meeting(x, y + _passo_y, obj_wall)) {
+	while(!_preso && _passo_y != 0 && place_meeting(x, y + _passo_y, obj_wall))
+	{
 		_passo_y = (abs(_passo_y) < 1) ? 0 : _passo_y - sign(_passo_y);
 	}
-	if (_passo_y != vel_y) vel_y = 0;
+	if (_passo_y != vel_y){
+		bater_parede(abs(vel_y), (vel_y > 0) ? 270 : 90);
+		vel_y = 0;
+		};
 	y += _passo_y
+
+	//Poeira de caminhada
+	if (dash_timer <= 0 && point_distance(0, 0, _passo_x, _passo_y) > global.poeira_vel_min)
+	{
+		poeira_tick += 1;
+		
+		if (poeira_tick >= global.poeira_int)
+		{
+			poeira_tick = 0;
+			
+			repeat(global.poeira_walk_n)
+			{
+				poeira_criar(x, y + global.poeira_offset_y,
+				point_direction(_passo_x, _passo_y, 0, 0), global.poeira_walk_forca);
+			}
+		}
+	}
+	else
+	{
+		//Parado
+		poeira_tick = global.poeira_int;
+	}
 }
 
 ///@desc Calcula colisão entre entidades
@@ -345,7 +386,7 @@ function explodir(_x, _y, _raio, _dmg, _dono, _ignorar = noone)
 				&& _p.invul_timer <= 0
 				&& point_distance(_x, _y, _p.x, _p.y) <= _raio)
 		{
-			_p.hp -= dmg;
+			_p.hp -= _dmg;
 			_p.invul_timer = global.hit_invul;
 			
 			if (_p.hp <= 0){ game_over() }
@@ -360,7 +401,7 @@ function explodir(_x, _y, _raio, _dmg, _dono, _ignorar = noone)
 		if (point_distance(_x, _y, x, y) > _raio) continue;
 		
 		hp -= _dmg;
-		if (hp <= 0){ die(id) }
+		if (hp <= 0){ die(id, global.corpo_forca_explosao, point_direction(_x, _y, x, y)) }
 	}
 }
 
@@ -389,4 +430,51 @@ function alvo_curva(_x, _y, _dir, _obj)
 	}
 	
 	return _melhor;
+}
+
+/// @desc Empurra a instância pra fora de paredes, se estiver presa
+/// @arg {REAL} _passo Distância entre anéis de busca
+/// @arg {REAL} _max Raio máximo de busca
+function desencavar(_passo = 4, _max = 96)
+{
+	if (!place_meeting(x, y, obj_wall)) exit;
+	
+	for (var _r = _passo; _r <= _max; _r += _passo)
+	{
+		for (var _a = 0; _a < 360; _a += 30)
+		{
+			var _nx = x + lengthdir_x(_r, _a);
+			var _ny = y + lengthdir_y(_r, _a);
+			var _bw = (bbox_right - bbox_left) * 0.5;
+			var _bh = (bbox_bottom - bbox_top) * 0.5;
+
+			if ((_nx - _bw) < 0 || (_nx + _bw) >= room_width) continue;
+			if ((_ny - _bh) < 0 || (_ny + _bh) >= room_height) continue;
+			if (place_meeting(_nx, _ny, obj_wall)) continue;
+			
+			
+			x = _nx;
+			y = _ny;
+			exit;
+		}
+	}
+}
+
+/// @desc Reage a uma batida em parede
+/// @arg {REAL} _vel Velocidade no instante do impacto
+/// @arg {REAL} _dir Direção em que estava indo
+function bater_parede(_vel, _dir)
+{
+	if (_vel < global.impacto_min) exit;
+	
+	var _forca = min(_vel * global.impacto_escala, global.impacto_max);
+	
+	var _horizontal = (abs(lengthdir_x(1, _dir)) > 0.5);
+	anim_impacto += _horizontal ? -_forca : _forca;
+	
+	//Tinta no ponto de contato na cor de quem bateu
+	var _raio = (bbox_right - bbox_left) * 0.5;
+	
+	tinta_splatter(x + lengthdir_x(_raio, _dir), y + lengthdir_y(_raio, _dir),
+		global.impacto_tinta_raio, cor, global.impacto_tinta_gotas, _dir, global.impacto_tinta_forca);
 }

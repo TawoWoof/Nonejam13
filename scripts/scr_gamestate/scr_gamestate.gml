@@ -135,8 +135,6 @@ function entrar_loop() {
 	global.morph = 1;
 	
 	limpar_balas()
-	
-	limpar_balas()
 }
 
 function passo_loop() {

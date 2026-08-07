@@ -13,11 +13,18 @@ function anim_trocar(_spr)
 /// @arg {REAL} _move_y Input vertical deste step
 function sprite_atualizar(_move_x, _move_y)
 {
+	//Squash de impacto diminui SEMPRE
+	anim_impacto *= global.impacto_amort;
+	if (abs(anim_impacto) < 0.005) { anim_impacto = 0; }
+	
 	//Morte
 	if (anim_morte)
 	{
 		anim_trocar(spr_morte);
 		image_index = min(image_index + global.anim_vel_morte, sprite_get_number(sprite_index) - 1);
+		
+		anim_esticar = 0;
+		anim_girar = 0;
 		exit;
 	}
 	
@@ -34,17 +41,25 @@ function sprite_atualizar(_move_x, _move_y)
 		image_xscale = abs(image_xscale) * facing;
 		
 		anim_trocar(spr_dash);
+		anim_girar = 0;
 		
 		if (dash_timer > 0)
 		{
 			//Rearma a aterrissagem a cada step do dash
 			pouso_timer = global.anim_pouso_dur;
 			image_index = (dash_timer > dash_dur - global.anim_dash_saida) ? 0 : 1;
+			
+			var _t = 1 - (dash_timer / max(1, dash_dur));
+			anim_esticar = -cos(_t * 2 * pi) * global.anim_squash_dash + anim_impacto;
 		}
 		else
 		{
 			pouso_timer -= 1;
 			image_index = (pouso_timer > global.anim_pouso_dur * 0.5) ? 2 : 3;
+			
+			//Aterrissagem
+			var _p = pouso_timer / max(1, global.anim_pouso_dur);
+			anim_esticar = -_p * global.anim_squash_dash + anim_impacto;
 		}
 		
 		exit;
@@ -65,4 +80,13 @@ function sprite_atualizar(_move_x, _move_y)
 	
 	var _n = max(1, sprite_get_number(sprite_index));
 	image_index = ((image_index mod _n) + _n) mod _n;
+	
+	//Pulsa mais rápido e mais forte andando
+	anim_fase += _andando ? global.anim_fase_walk : global.anim_fase_idle;
+	
+	var _amp = _andando ? global.anim_squash_walk : global.anim_squash_idle;
+	anim_esticar = sin(anim_fase) * _amp + anim_impacto;
+	
+	//Balanço na METADE da frequência do squash e uma inclinação por ciclo
+	anim_girar = _andando ? sin(anim_fase * 0.5) * global.anim_giro_walk * facing : 0;
 }

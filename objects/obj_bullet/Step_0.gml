@@ -82,13 +82,13 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		if (_alvo.hp > 0)
 		{
 			tinta_splatter(_alvo.x, _alvo.y, global.tinta_raio_hit, _alvo.cor,
-				global.tinta_gotas_hit, bullet_dir, 8);
+				global.tinta_gotas_hit, bullet_dir, global.tinta_forca_hit);
 		}
 		
 		if (explosao > 0){ explodir(x, y, explosao, dmg, owner_type, _alvo) }
 		
 		if (_alvo.hp <= 0) {
-			die(_alvo)
+			die(_alvo, bullet_speed, bullet_dir)
 		}
 		
 		if (pierce_left > 0)

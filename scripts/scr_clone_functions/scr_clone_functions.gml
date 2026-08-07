@@ -22,20 +22,21 @@ function spawn_clones() {
 		_clone.cor = loop_cor(_loop.loop_index);
 		_clone.cor_viva = cor_clarear(cor_dessaturar(_clone.cor, global.clone_dessat), global.clone_clarear);
 		
+		//A posição foi validada com a máscara do player, não a do clone
+		with (_clone) { desencavar(); }
+		
 		//Se existe um buffer no clone, cria um target para a mira
 		if (array_length(_loop.buffer) > 0) {
 			_clone.mira_alvo = _loop.buffer[0].mira;
 		}
-		
-		show_debug_message("clone loop " + string(_loop.loop_index)
-			+ " | cartas: " + string(_loop.cartas)
-			+ " | bullet_count: " + string(_clone.bullet_count));
 	}
 }
 
 ///@desc Mata o clone atingido
 ///@arg {Asset.GMObject}  _alvo  Alvo atingido
-function die(_alvo)
+///@arg {REAL}  _forca Velocidade do que matou
+///@arg {REAL}  _dir  Direção do empurrão
+function die(_alvo, _forca = 0, _dir = undefined)
 {
 	
 	//Marca a pontuação do clone
@@ -49,21 +50,18 @@ function die(_alvo)
 	var _my = _alvo.y
 	
 	var _cor = _alvo.cor;
-	var _dir = _alvo.ultimo_hit_dir;
-	var _xs = _alvo.image_xscale;
-	var _ys = _alvo.image_yscale;
+	var _hit = _alvo.ultimo_hit_dir;
 	
+	//Corpo nasce com a pose viva e assume o lugar do clone
+	corpo_criar(_alvo, _forca, is_undefined(_dir) ? _hit : _dir);	
 	
 	//Destrói o clone e a arma
 	if (_alvo.gun != noone && instance_exists(_alvo.gun)) { instance_destroy(_alvo.gun); }
 	instance_destroy(_alvo);
 	
+	//Splatter do impacto
 	tinta_splatter(_mx, _my, global.tinta_raio_morte, _cor,
-		global.tinta_gotas_morte, _dir, global.tinta_forca_morte)
-	
-	var _frame_corpo = sprite_get_number(global.tinta_spr_corpo) - 1;
-	
-	tinta_corpo(global.tinta_spr_corpo, _frame_corpo, _mx, _my, _xs, _ys, irandom(359), _cor);
+		global.tinta_gotas_morte, _hit, global.tinta_forca_morte)
 	
 	if (_pontos > 0){ popup_criar(_mx, _my - 10, string(_pontos), _cor) }
 	zoom_add(global.zoom_kill);

@@ -79,3 +79,31 @@ function cor_clarear(_cor, _t)
 	);
 }
 
+/// @desc Corpo que segura a pose do abate, desliza e vira mancha ao parar
+/// @arg {Id.Instance} _alvo Clone que morreu. Chamar ANTES de destruir
+/// @arg {REAL} _forca Velocidade de quem matou
+/// @arg {REAL} _dir Direção do empurrão
+function corpo_criar(_alvo, _forca, _dir)
+{
+	var _c = instance_create_depth(_alvo.x, _alvo.y, global.corpo_depth, obj_corpo);
+	
+	//Pose congelada do instante do abate
+	_c.spr_vivo = _alvo.sprite_index;
+	_c.img_vivo = _alvo.image_index;
+	_c.ang_vivo = _alvo.image_angle;
+	_c.alpha_vivo = _alvo.alpha_atual;
+	
+	//Pose morta
+	_c.spr = _alvo.spr_morte;
+	_c.mask_index = global.mask_corpo;
+	_c.xs = _alvo.image_xscale;
+	_c.ys = _alvo.image_yscale;
+	_c.cor = _alvo.cor;
+	
+	_c.vel = _forca * global.corpo_impulso;
+	_c.dir = is_undefined(_dir) ? irandom(359) : _dir;
+	_c.ang = irandom(359);
+	_c.giro = random_range(-global.corpo_giro, global.corpo_giro);
+	
+	return _c;
+}

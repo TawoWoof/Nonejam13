@@ -122,6 +122,37 @@ global.anim_dash_saida = 3;		//Steps iniciais do dash
 global.anim_pouso_dur = 8;		//Steps de aterrissagem
 global.anim_mira_zona = 0.15;	//Zona morta da mira
 
+//Squash/stretch procedural
+global.anim_fase_idle = 0.06;		//Velocidade do sinewave parado (radianos/step)
+global.anim_fase_walk = 0.22;		//Velocidade do sinewave andando
+global.anim_squash_idle = 0.03;		//Amplitude do squash parado
+global.anim_squash_walk = 0.08;		//Amplitude do squash andando
+global.anim_giro_walk = 4;			//Balanço lateral andando, em graus
+global.anim_squash_dash = 0.22;		//Amplitude do squash no dash
+
+//Impacto em parede
+global.impacto_min = 1.2;			//Velocidade mínima pra registrar batida
+global.impacto_escala = 0.045;		//Squash por unidade de velocidade
+global.impacto_max = 0.30;			//Teto do squash de impacto
+global.impacto_amort = 0.82;		//Amortecimento por step
+global.impacto_tinta_raio = 6;		//Tinta deixada na parede
+global.impacto_tinta_gotas = 4;
+global.impacto_tinta_forca = 10;
+
+//Corpo deslizante
+global.corpo_depth = 60;			//Atrás das entidades vivas
+global.corpo_impulso = 1.6;			//Velocidade inicial = velocidade da bala * esse fator aqui
+global.corpo_quique = 0.75;			//Velocidade que sobra depois de bater na parede
+global.corpo_atrito = 0.90;			//Desaceleração por step
+global.corpo_parada = 0.35;			//Abaixo disso o corpo assenta e vira mancha
+global.corpo_giro = 3;				//Giro inicial máximo, em graus por step
+global.corpo_forca_explosao = 10;	//Empurrão de quem morre por explosão
+global.corpo_rastro_int = 2;		//Steps entre manchas do arrasto
+global.corpo_rastro_forca = 4;	//Raio da mancha por unidade de velocidade
+global.corpo_rastro_raio = 18;		//Teto do raio do arrasto
+global.corpo_rastro_gotas = 3;		//respingo por arrasto
+global.mask_corpo = spr_clone;		//Mascara de colisão
+
 function start_stats() {
 	return {
 		move_speed: 4,
@@ -147,7 +178,7 @@ function start_stats() {
 		accel: 0.1,
 		decel: 0.3,
 		clone_bullet_multiplier: 0.5,
-		has_dash: false,
+		has_dash: true,
 		dash_speed: 8,
 		dash_dur: 10,
 		dash_cd: 45,
@@ -181,16 +212,36 @@ global.cor_player = make_color_rgb(32, 32, 38);	//Cor do player (marcas de bala 
 global.cor_tutorial = make_color_rgb(228, 231, 238);	//Cor do tutorial
 global.clone_dessat = 0.55;		//0 = cor cheia, 1 = cinza
 global.clone_clarear = 0.35;	//0 = cor cheia, 1 = branco
-global.tinta_spr_corpo = spr_clone_death;
 
-global.tinta_raio_morte = 20;	//Raio da poça de morte
-global.tinta_gotas_morte = 10;	//Respingos por morte
-global.tinta_forca_morte = 26;	//Alcance extra dos respingos na direção do tiro
+//MORTE
+global.tinta_raio_morte = 34;	//Raio da poça de morte
+global.tinta_gotas_morte = 18;	//Respingos por morte
+global.tinta_forca_morte = 44;	//Alcance extra dos respingos na direção do tiro
 global.tinta_cone = 40;			//Abertura do leque de respingo, em graus
 global.tinta_alpha = 0.85;		//Força da mancha. Manchas sobrepostas somam
 
-global.tinta_raio_hit = 5;		//Poça de hit que não mata
-global.tinta_gotas_hit = 5;
+//HIT
+global.tinta_raio_hit = 12;		//Poça de hit que não mata
+global.tinta_gotas_hit = 9;
+global.tinta_forca_hit = 20;
 
 global.tinta_raio_parede = 3;	//Marca de bala na parede
 global.tinta_gotas_parede = 2;
+
+//POEIRA
+global.poeira_depth = 55;			//Abaixo das entidades, acima do corpo caído
+global.poeira_cor = make_color_rgb(170, 174, 186);
+global.poeira_alpha = 0.5;			//Opacidade ao nascer
+global.poeira_dur = 22;				//Frames de vida
+global.poeira_atrito = 0.88;		//Desaceleração do sopro
+global.poeira_cone = 35;			//Abertura do leque, em graus
+global.poeira_raio_ini = 1.5;		//Raio ao nascer
+global.poeira_raio_fim = 6;			//Raio pro qual expande
+global.poeira_expansao = 0.12;		//Velocidade da expansão
+global.poeira_offset_y = 8;			//Altura do pé em relação à origem do sprite
+global.poeira_int = 5;				//Steps entre nuvens andando
+global.poeira_vel_min = 0.8;		//Velocidade mínima pra levantar poeira
+global.poeira_walk_forca = 0.7;		//Sopro da caminhada
+global.poeira_walk_n = 2;			//Nuvens por frame de walk
+global.poeira_dash_n = 4;			//Nuvens por frame de dash
+global.poeira_dash_forca = 2.2;		//Sopro do dash
