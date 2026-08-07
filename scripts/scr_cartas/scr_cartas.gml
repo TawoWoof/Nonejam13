@@ -152,33 +152,34 @@ function cartas_definir()
 				categoria:	CARTA_CAT.SKILL,
 				raridade: CARTA_RAR.INCOMUM,
 				max_copias:	1,
-				requisito: function() { /* NÃO ter o teleport */ }
+				//requisito: function() { /* NÃO ter o teleport */ }
 			}),
 		#endregion
 		
 		#region RARA
-			carta_criar(
-			{
-				id: "skill_teleport",
-				nome: "Transposição",
-				desc: "Teleportar-se em uma distância curta",
-				categoria:	CARTA_CAT.SKILL,
-				raridade: CARTA_RAR.RARA,
-				max_copias:	1,
-				requisito: function() { /* NÃO ter o dash */ }
-			}),
+		
+			//carta_criar(
+			//{
+			//	id: "skill_teleport",
+			//	nome: "Transposição",
+			//	desc: "Teleportar-se em uma distância curta",
+			//	categoria:	CARTA_CAT.SKILL,
+			//	raridade: CARTA_RAR.RARA,
+			//	max_copias:	1,
+			//	requisito: function() { /* NÃO ter o dash */ }
+			//}),
 		#endregion
 	
 		#region LENDÁRIA
-			carta_criar(
-			{
-				id: "skill_stop",
-				nome: "Suspenção",
-				desc: "Paralisa todos projéteis inimigos por 2 segundos",
-				categoria:	CARTA_CAT.SKILL,
-				raridade: CARTA_RAR.LENDARIA,
-				max_copias:	1
-			}),
+			//carta_criar(
+			//{
+			//	id: "skill_stop",
+			//	nome: "Suspenção",
+			//	desc: "Paralisa todos projéteis inimigos por 2 segundos",
+			//	categoria:	CARTA_CAT.SKILL,
+			//	raridade: CARTA_RAR.LENDARIA,
+			//	max_copias:	1
+			//}),
 		#endregion
 		
 	#endregion
@@ -248,7 +249,7 @@ function cartas_definir()
 				desc: "Quanto menor o tempo restante, maior a cadência de fogo",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
-				aplicar: function(_s){ _s.adrenalina += 0.35 }
+				aplicar: function(_s){ _s.adrenalina += 1 }
 			}),
 			
 			carta_criar(
@@ -259,7 +260,7 @@ function cartas_definir()
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.INCOMUM,
 				requisito: function() { return (instance_exists(global.player) && global.player.max_hp >= 5 )},
-				aplicar: function(_s){ _s.berserk += 2 }
+				aplicar: function(_s){ _s.berserk += 1 }
 			}),
 		#endregion
 	
@@ -280,12 +281,12 @@ function cartas_definir()
 			{
 				id: "passive_shards_1",
 				nome: "Estilhaço",
-				desc: "Clones mortos explodem em 4 tiros",
+				desc: "Clones mortos explodem em tiros",
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.RARA,
 				heranca: HERANCA.NENHUMA,
-				max_copias:	1,
-				aplicar: function(_s){ _s.estilhacos = max(_s.estilhacos, 4) }
+				max_copias:	4,
+				aplicar: function(_s){ _s.estilhacos += 1 }
 			}),
 		#endregion
 	
@@ -299,7 +300,7 @@ function cartas_definir()
 				raridade: CARTA_RAR.LENDARIA,
 				heranca: HERANCA.NENHUMA,
 				max_copias:	1,
-				requisito: function() { return (carta_copias("passive_shards_1") > 0 )},
+				requisito: function() { return (carta_copias("passive_shards_1") > 3 )},
 				aplicar: function(_s){ _s.estilhacos = max(_s.estilhacos, 8) }
 			}),
 			
@@ -324,16 +325,16 @@ function cartas_definir()
 				aplicar: function(_s){ _s.mira_curva += 2 }
 			}),
 			
-			carta_criar(
-			{
-				id: "passive_bullet_sleep",
-				nome: "Soninho",
-				desc: "Aumenta o tempo que os projéteis ficam em repouso",
-				categoria:	CARTA_CAT.PASSIVO,
-				raridade: CARTA_RAR.LENDARIA,
-				heranca: HERANCA.NENHUMA,
-				requisito: function() { /* requer carta skill_stop*/ }
-			}),
+			//carta_criar(
+			//{
+			//	id: "passive_bullet_sleep",
+			//	nome: "Soninho",
+			//	desc: "Aumenta o tempo que os projéteis ficam em repouso",
+			//	categoria:	CARTA_CAT.PASSIVO,
+			//	raridade: CARTA_RAR.LENDARIA,
+			//	heranca: HERANCA.NENHUMA,
+			//	requisito: function() { /* requer carta skill_stop*/ }
+			//}),
 		#endregion
 		
 	#endregion
@@ -402,19 +403,19 @@ function cartas_definir()
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
 				aplicar: function(_s){ _s.dash_speed += 2; },
-				requisito: function() { /* Ter o dash*/ }
+				requisito: function() { return (carta_copias("skill_dash") > 0) }
 			}),
 			
-			carta_criar(
-			{
-				id: "stat_teleport_distance",
-				nome: "Visualização",
-				desc: "Distância de Teleporte melhorada",
-				categoria:	CARTA_CAT.STAT,
-				raridade: CARTA_RAR.INCOMUM,
-				aplicar: function(_s){ _s.teleport_dist += 32; },
-				requisito: function() { /* Ter o Teleporte*/ }
-			}),
+			//carta_criar(
+			//{
+			//	id: "stat_teleport_distance",
+			//	nome: "Visualização",
+			//	desc: "Distância de Teleporte melhorada",
+			//	categoria:	CARTA_CAT.STAT,
+			//	raridade: CARTA_RAR.INCOMUM,
+			//	aplicar: function(_s){ _s.teleport_dist += 32; },
+			//	requisito: function() { /* Ter o Teleporte*/ }
+			//}),
 			
 			carta_criar(
 			{
@@ -424,7 +425,7 @@ function cartas_definir()
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
 				aplicar: function(_s){ _s.dash_cd = max(10, _s.dash_cd - 8); },
-				requisito: function() { /* Ter o dash*/ }
+				requisito: function() { return (carta_copias("skill_dash") > 0); }
 			}),
 			
 			
@@ -472,7 +473,7 @@ function cartas_definir()
 	#endregion
 		
 	#region TYPE - ITEM
-		
+		/*
 		#region COMUM
 		#endregion
 	
@@ -538,7 +539,7 @@ function cartas_definir()
 				heranca: HERANCA.NENHUMA,
 			}),
 		#endregion
-		
+		*/
 	#endregion
 	]
 }

@@ -5,6 +5,7 @@ var _w = camera_get_view_width(_cam);
 var _h = camera_get_view_height(_cam);
 
 //Evita retroalimentação da posição do mouse
+//Evita retroalimentação da posição do mouse
 var _rx = clamp(window_mouse_get_x() / max(1, window_get_width()), 0, 1) - 0.5;
 var _ry = clamp(window_mouse_get_y() / max(1, window_get_height()), 0, 1) - 0.5;
 

@@ -26,7 +26,13 @@ function loop_end() {
 	
 	limpar_balas();
 	
-	estado_trocar(GAME.LIVRE);
+	if (global.cartas_disponiveis > 0)
+	{
+		estado_trocar(GAME.FREEZE);
+		exit
+	}
+	
+	estado_trocar(GAME.GAP);
 }
 
 /// @desc Inicia a gravação do loop
@@ -63,36 +69,40 @@ function spawn_player(_dist = 128) {
 	//Se for o primeiro loop, envia as informações 
 	if (global.loop_atual == 1){ return { x: global.tutorial_x, y: global.tutorial_y }; }
 	
-	var _min_dist = _dist;	//Distância minima para spawn de outras entidades
-	var _try = 50;			//Quantidade de tentativas de spawn
+	var _try = 60;
+	var _melhor_x = x;
+	var _melhor_y = y;
+	var _melhor_folga = -1;
 	
-	//Loopa pelas tentativas
-	for (var t = 0; t < _try; t++) {
-		
-		//Pega um lugar random
+	for (var t = 0; t < _try; t++)
+	{
 		var _try_x = irandom(room_width);
 		var _try_y = irandom(room_height);
 		
 		//Checa se está fora da parede
-		if (place_meeting(_try_x, _try_y, obj_wall)) continue;
+		if (place_meeting(_try_x, _try_y, obj_wall)){ continue }
 		
 		//Checa se está muito perto de alguma entidade
-		var _valido = true;
+		var _folga = room_width + room_height;
 		var _clones = instance_number(obj_clone);
-		for (var i = 0; i < _clones; i++) {
-			var _clone_atual = instance_find(obj_clone, i);
-			if (point_distance(_try_x, _try_y, _clone_atual.x, _clone_atual.y) < _min_dist) {
-				_valido = false;
-				break;
-			}
-		}
 		
-		//Se encontrou um spawn válido, envia
-		if (_valido) {
-			return { x: _try_x, y: _try_y };
+		with (obj_clone)
+		{
+			_folga = min(_folga, point_distance(_try_x, _try_y, x, y));
 		}
+			
+		//Salva o melhor candidato
+		if (_folga > _melhor_folga)
+		{
+			_melhor_folga = _folga;
+			_melhor_x = _try_x;
+			_melhor_y = _try_y;
+		}
+			
+		//Folga suficiente? Para de procurar
+		if (_folga >= _dist) break;
 	}
 	
 	//Se não, desiste da vida
-	return { x: x, y: y };
+	return { x: _melhor_x, y: _melhor_y };
 }

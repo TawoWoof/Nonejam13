@@ -33,8 +33,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"spr_clone",
-    "path":"sprites/spr_clone/spr_clone.yy",
+    "name":"spr_clone_nogun",
+    "path":"sprites/spr_clone_nogun/spr_clone_nogun.yy",
   },
   "spriteMaskId":null,
   "visible":true,

@@ -8,3 +8,7 @@ global.cutscene_destino = GAME.MENU;
 global.cutscene_duracao = 120;
 
 global.gravando = false;
+
+run_resetar();
+
+display_set_gui_size(768, 432)

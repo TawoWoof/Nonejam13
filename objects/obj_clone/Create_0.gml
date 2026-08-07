@@ -22,10 +22,12 @@ dash_timer = 0;							//Frames DO DASH
 dash_cooldown = 0;						//Cooldown do dash
 dash_dir = 0;							//Direção do dash
 invul_timer = 0;						//Invulnerabilidade
-delay = 0;								//Delay do começo
-delay_max = 0;							//Delay Máximo
-
+delay_max = global.delay;							//Delay Máximo
 type = BULLET_OWNER.CLONE;				//Time
 mira_atual = 0;							//Onde está mirando atualmente
 mira_inicial = 0;						//Onde a mira começou
 mira_alvo = 0;							//Onde a mira precisa chegar
+
+cor = global.cor_player;				//Cor cheia (sobrescrita no spawn_clones)
+cor_viva = global.cor_player;			//Versão dessaturada, usada enquanto vivo
+ultimo_hit_dir = undefined;				//Direção do último tiro recebido

@@ -4,7 +4,7 @@ if (!jogo_rodando()) exit;
 if (curva > 0)
 {
 	var _dono = (owner_type == BULLET_OWNER.PLAYER) ? obj_clone : obj_player
-	var _alvo_curva = instance_nearest(x, y, _dono)
+	var _alvo_curva = alvo_curva(x, y, bullet_dir, _dono);
 	
 	if (_alvo_curva != noone)
 	{
@@ -36,6 +36,7 @@ if (place_meeting(x + _move_x, y, obj_wall))
 	}
 	else
 	{
+		tinta_splatter(x, y, global.tinta_raio_parede, cor, global.tinta_gotas_parede, bullet_dir + 180, 4);
 		instance_destroy();
 		exit
 	}
@@ -54,6 +55,7 @@ if (place_meeting(x, y + _move_y, obj_wall))
 	}
 	else
 	{
+		tinta_splatter(x, y, global.tinta_raio_parede, cor, global.tinta_gotas_parede, bullet_dir + 180, 4);
 		instance_destroy();
 		exit
 	}
@@ -74,6 +76,13 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		ultimo_alvo = _alvo;
 		
 		_alvo.hp -= dmg;
+		_alvo.ultimo_hit_dir = bullet_dir;
+		
+		if (_alvo.hp > 0)
+		{
+			tinta_splatter(_alvo.x, _alvo.y, global.tinta_raio_hit, _alvo.cor,
+				global.tinta_gotas_hit, bullet_dir, 8);
+		}
 		
 		if (explosao > 0){ explodir(x, y, explosao, dmg, owner_type, _alvo) }
 		
@@ -85,6 +94,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		{
 			pierce_left -= 1;
 		}else{
+			tinta_splatter(x, y, global.tinta_raio_parede, cor, global.tinta_gotas_parede, bullet_dir + 180, 4);
 			instance_destroy();
 			exit;
 		}
@@ -116,6 +126,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 		{
 			pierce_left -= 1;
 		}else{
+			tinta_splatter(x, y, global.tinta_raio_parede, cor, global.tinta_gotas_parede, bullet_dir + 180, 4);
 			instance_destroy()
 			exit
 		}

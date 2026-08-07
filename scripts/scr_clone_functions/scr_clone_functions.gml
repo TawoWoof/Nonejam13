@@ -18,10 +18,18 @@ function spawn_clones() {
 		_clone.delay = _clone.delay + _sono;
 		_clone.delay_max = _clone.delay;
 		
+		//Identidade visual pelo loop de origem
+		_clone.cor = loop_cor(_loop.loop_index);
+		_clone.cor_viva = cor_clarear(cor_dessaturar(_clone.cor, global.clone_dessat), global.clone_clarear);
+		
 		//Se existe um buffer no clone, cria um target para a mira
 		if (array_length(_loop.buffer) > 0) {
 			_clone.mira_alvo = _loop.buffer[0].mira;
 		}
+		
+		show_debug_message("clone loop " + string(_loop.loop_index)
+			+ " | cartas: " + string(_loop.cartas)
+			+ " | bullet_count: " + string(_clone.bullet_count));
 	}
 }
 
@@ -39,9 +47,20 @@ function die(_alvo)
 	var _mx = _alvo.x
 	var _my = _alvo.y
 	
+	var _cor = _alvo.cor;
+	var _dir = _alvo.ultimo_hit_dir;
+	var _xs = _alvo.image_xscale;
+	var _ys = _alvo.image_yscale;
+	
+	
 	//Destrói o clone e a arma
 	instance_destroy(_alvo.gun);
 	instance_destroy(_alvo);
+	
+	tinta_splatter(_mx, _my, global.tinta_raio_morte, _cor,
+		global.tinta_gotas_morte, _dir, global.tinta_forca_morte)
+		
+	tinta_corpo(global.tinta_spr_corpo, 0, _mx, _my, _xs, _ys, irandom(359), _cor);
 	
 	global.kills_loop += 1;
 	
@@ -104,6 +123,7 @@ function estilhacar(_x, _y, _n)
 		_b.bounces_left = ricochete;
 		_b.pierce_left = perfuracao;
 		_b.curva = mira_curva;
+		_b.cor = cor;
 	}
 }
 

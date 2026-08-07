@@ -1,7 +1,7 @@
 switch(on_click)
 {
 	case "Jogar":
-		estado_trocar(GAME.LIVRE);
+		estado_trocar(GAME.GAP);
 	break;
 	
 	case "Créditos":

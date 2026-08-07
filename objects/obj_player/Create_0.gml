@@ -1,7 +1,7 @@
 //cria a arma e define o dono dela
 gun = instance_create_layer(x, y, layer, obj_gun)
 gun.player = id
-
+cor = global.cor_player;		//Cor das marcas de bala
 //Inicialização de stats. Edições em start_stats()
 stats_escrever(id, start_stats())
 

@@ -45,6 +45,7 @@ function jogo_rodando() {
 	return (	global.estado != GAME.MENU
 			&&  global.estado != GAME.MORTE
 			&&  global.estado != GAME.CUTSCENE
+			&&  global.estado != GAME.GAP
 			&&  global.estado != GAME.FREEZE);
 }
 /// @desc Entra numa cutscene e então vai para o destino
@@ -57,27 +58,40 @@ function cutscene_ir(_destino, _duracao = 120) {
 }
 
 function entrar_menu() {
-	global.gravando = false;
+	run_resetar();
+	
 	if (room != rm_menu) { room_goto(rm_menu); }
 }
 
 function passo_menu() {
 	if (keyboard_check_pressed(vk_anykey)) {
-		estado_trocar(GAME.LIVRE);
+		estado_trocar(GAME.GAP);
 	}
 }
 
 function entrar_gap() {
-	if (room != Room1) { room_goto(Room1); }
+	global.gravando = false;
+	
+	if (room != rm_base) { room_goto(rm_base); }
 }
 
 function passo_gap() {
 	
-	var _espera = (global.estado_anterior == GAME.MENU) ? 0 : global.loop_gap
+	if (room != rm_base){ exit };
+	if (!instance_exists(global.loop_master) || !instance_exists(global.player)){ exit };
+	if (global.estado_anterior == GAME.MENU){ estado_trocar(GAME.LOOP); }
 	
-	if (global.estado_timer >=_espera) {
-		estado_trocar(GAME.LOOP);
+	var _pulou = (global.estado_timer >= global.gap_min && keyboard_check_pressed(vk_anykey));
+	
+	if (global.estado_timer < global.loop_gap && !_pulou){ exit };
+	
+	if (global.cartas_disponiveis > 0)
+	{
+		estado_trocar(GAME.FREEZE)
+		exit;
 	}
+	
+	estado_trocar(GAME.LOOP);
 }
 
 function entrar_loop() {
@@ -185,6 +199,7 @@ function loop_tempo_calcular(_loop) {
 
 /// @desc Texto do relógio pro HUD
 function loop_tempo_texto() {
+	if (global.estado != GAME.LOOP) return "";
 	if (global.loop_tempo == TIMELESS) return "";
 	
 	return tempo_formatar(loop_ms_restantes());
@@ -201,7 +216,7 @@ function passo_freeze()
 	
 	if(_n == 0)
 	{
-		estado_trocar(GAME.LIVRE)
+		estado_trocar(GAME.LOOP)
 		exit
 	}
 	
@@ -213,7 +228,41 @@ function passo_freeze()
 		global.cartas_disponiveis -= 1;
 		
 		global.cartas_opcoes = []
-		estado_trocar(GAME.LIVRE);
+		
+		if (global.cartas_disponiveis > 0)
+		{
+			estado_trocar(GAME.FREEZE);
+			exit;
+		}
+		
+		estado_trocar(GAME.LOOP);
 		exit
 	}
+}
+
+/// @desc Quantos loops até a carta
+function cartas_faltam()
+{
+	if (global.loop_atual <= 0) return global.cartas_intervalo;
+	
+	return global.cartas_intervalo - 1 - ((global.loop_atual - 1) mod global.cartas_intervalo)
+}
+
+/// @desc Zera tudo que dura uma run.
+/// Global sobrevive à troca de room, então precisa de reset explícito
+function run_resetar()
+{
+	global.inventario = start_inventario();
+	global.cartas_disponiveis = 0;
+	global.cartas_opcoes = [];
+	
+	global.loop_atual = 0;
+	global.loop_tempo = TIMELESS;
+	
+	global.pontos = 0;
+	global.pontos_abates = 0;
+	global.pontos_tempo = 0;
+	global.kills_loop = 0;
+	
+	global.gravando = false;
 }

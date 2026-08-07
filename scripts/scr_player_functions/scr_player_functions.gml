@@ -139,7 +139,8 @@ function atirar(_mira){
 	var _dmg = bullet_dmg
 	if (berserk > 0 && max_hp > 0)
 	{
-		_dmg += floor(berserk * (1 - hp / max_hp))
+		var _falta = max(0, 1 - hp/max_hp)
+		_dmg += floor(berserk * global.berserk_fator * power(_falta, global.bersek_curva));
 	}
 	
 	var _espaco = sprite_get_width(_spr) * bullet_scale;
@@ -168,6 +169,7 @@ function atirar(_mira){
 		_bullet.pierce_left = perfuracao
 		_bullet.explosao = explosao
 		_bullet.curva = mira_curva
+		_bullet.cor = cor
 	}
 	
 	//chama o shake se for o player
@@ -175,11 +177,17 @@ function atirar(_mira){
 	if (type == BULLET_OWNER.PLAYER) { shake_add(global.shake_tiro, _mira); }
 	
 	//Ativa o cooldown
-	cooldown = max(2, round(fire_rate * (1 - adrenalina * urgencia_relogio())));
+	cooldown = max(2, round(fire_rate * power(global.adrenalina_fator, adrenalina * urgencia_relogio())));
 }
 
 /// @desc Sinaliza a morte do player
 function game_over() {
+	if (instance_exists(global.player))
+	{
+		tinta_splatter(global.player.x, global.player.y, global.tinta_raio_morte * 1.4,
+			global.cor_player, global.tinta_gotas_morte, undefined, global.tinta_forca_morte);
+	}
+	
 	estado_trocar(GAME.MORTE);
 }
 
@@ -289,7 +297,7 @@ function urgencia_relogio()
 	if (global.estado != GAME.LOOP) return 0;
 	if (global.loop_tempo == TIMELESS || global.loop_tempo <= 0) return 0;
 	
-	return clamp(1 - (loop_steps_restantes() / global.loop_tempo), 0, 1);
+	return power(0.5, (loop_steps_restantes() / global.adrenalina_meia_vida));
 }
 
 /// @desc Dano em área
@@ -322,14 +330,40 @@ function explodir(_x, _y, _raio, _dmg, _dono, _ignorar = noone)
 		exit
 	}
 	
-	for(var i = instance_number(obj_clone) - 1; i > 0; i-- )
+	with (obj_clone)
 	{
-		var _c = instance_find(obj_clone, i);
 		
-		if (_c == _ignorar || _c.invul_timer > 0) continue;
-		if (point_distance(_x, _y, _c.x, _c.y) > _raio) continue;
+		if (id == _ignorar || invul_timer > 0) continue;
+		if (point_distance(_x, _y, x, y) > _raio) continue;
 		
-		_c.hp -= _dmg;
-		if (_c.hp <= 0){ die(_c) }
+		hp -= _dmg;
+		if (hp <= 0){ die(id) }
 	}
+}
+
+/// @desc Alvo da bala teleguiada
+/// @arg {REAL} _x
+/// @arg {REAL} _y
+/// @arg {REAL} _dir
+/// @arg {Asset.GMObject} _obj
+function alvo_curva(_x, _y, _dir, _obj)
+{
+	var _melhor = noone;
+	var _melhor_dist = global.curva_alcance;
+	
+	with(_obj)
+	{
+		var _d = point_distance(_x, _y, x, y);
+		
+		if (_d > _melhor_dist) continue;
+		
+		//Fora do cone frontal, ignora
+		var _dif = angle_difference(point_direction(_x, _y, x, y), _dir);
+		if (abs(_dif) > global.curva_angulo) continue;
+		
+		_melhor_dist = _d;
+		_melhor = id;
+	}
+	
+	return _melhor;
 }

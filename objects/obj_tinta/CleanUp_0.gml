@@ -1,0 +1,1 @@
+if (surface_exists(tinta)) { surface_free(tinta); }

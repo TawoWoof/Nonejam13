@@ -11,3 +11,5 @@ curva = 0;							//Aimbot
 
 ultimo_alvo = noone;
 ja_atingiu_player = false;
+
+cor = global.cor_player;			//Cor da tinta que esta bala deixa
