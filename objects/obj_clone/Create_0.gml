@@ -30,6 +30,7 @@ type = BULLET_OWNER.CLONE;				//Time
 mira_atual = 0;							//Onde está mirando atualmente
 mira_inicial = 0;						//Onde a mira começou
 mira_alvo = 0;							//Onde a mira precisa chegar
+windup = 0;								//0..1 de tiro iminente
 
 cor = global.cor_player;				//Cor cheia (sobrescrita no spawn_clones)
 cor_viva = global.cor_player;			//Versão dessaturada, usada enquanto vivo

@@ -38,7 +38,7 @@ function cartas_definir()
 					_s.bullet_count  = 1;
 					_s.bullet_spread = 18;
 					_s.fire_rate	 = 20;
-					_s.bullet_speed  = 8;
+					_s.bullet_speed  = 32;
 					_s.bullet_dmg	 = 1;
 				}
 			}),
@@ -57,7 +57,7 @@ function cartas_definir()
 					_s.bullet_count = 5;
 					_s.bullet_spread = 40;
 					_s.fire_rate = 45;
-					_s.bullet_speed = 7;
+					_s.bullet_speed = 28;
 					_s.bullet_dmg = 1;
 				}
 			}),
@@ -74,7 +74,7 @@ function cartas_definir()
 					_s.bullet_count = 1;
 					_s.bullet_spread = 25;
 					_s.fire_rate = 6;
-					_s.bullet_speed = 10;
+					_s.bullet_speed = 40;
 					_s.bullet_dmg = 1;
 				}
 			}),
@@ -91,7 +91,7 @@ function cartas_definir()
 					_s.bullet_count = 1;
 					_s.bullet_spread = 2;
 					_s.fire_rate = 40;
-					_s.bullet_speed = 16;
+					_s.bullet_speed = 64;
 					_s.bullet_dmg = 3;
 				}
 			}),
@@ -111,7 +111,7 @@ function cartas_definir()
 					_s.bullet_count = 3;
 					_s.bullet_spread = 8;
 					_s.fire_rate = 35;
-					_s.bullet_speed = 12;
+					_s.bullet_speed = 48;
 					_s.bullet_dmg = 1;
 				}
 			}),
@@ -130,7 +130,7 @@ function cartas_definir()
 					_s.bullet_count = 7;
 					_s.bullet_spread = 90;
 					_s.fire_rate = 60;
-					_s.bullet_speed = 6;
+					_s.bullet_speed = 24;
 					_s.bullet_dmg = 1;
 				}
 			}),
@@ -273,8 +273,8 @@ function cartas_definir()
 				categoria:	CARTA_CAT.PASSIVO,
 				raridade: CARTA_RAR.RARA,
 				heranca: HERANCA.PARCIAL,
-				aplicar: function(_s){ _s.explosao += 24 },
-				aplicar_clone: function(_s){ _s.explosao += 12 }
+				aplicar: function(_s){ _s.explosao += 96 },
+				aplicar_clone: function(_s){ _s.explosao += 48 }
 			}),
 			
 			carta_criar(
@@ -349,7 +349,7 @@ function cartas_definir()
 				desc: "Você anda mais rápido",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.COMUM,
-				aplicar: function(_s){ _s.move_speed += 1; }
+				aplicar: function(_s){ _s.move_speed += 4; }
 			}),
 			
 			carta_criar(
@@ -379,7 +379,7 @@ function cartas_definir()
 				desc: "Seus tiros são mais rápidos",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.COMUM,
-				aplicar: function(_s){ _s.bullet_speed += 1; }
+				aplicar: function(_s){ _s.bullet_speed += 4; }
 			}),
 		#endregion
 	
@@ -402,7 +402,7 @@ function cartas_definir()
 				desc: "Dash maior",
 				categoria:	CARTA_CAT.STAT,
 				raridade: CARTA_RAR.INCOMUM,
-				aplicar: function(_s){ _s.dash_speed += 2; },
+				aplicar: function(_s){ _s.dash_speed += 8; },
 				requisito: function() { return (carta_copias("skill_dash") > 0) }
 			}),
 			
@@ -413,7 +413,7 @@ function cartas_definir()
 			//	desc: "Distância de Teleporte melhorada",
 			//	categoria:	CARTA_CAT.STAT,
 			//	raridade: CARTA_RAR.INCOMUM,
-			//	aplicar: function(_s){ _s.teleport_dist += 32; },
+			//	aplicar: function(_s){ _s.teleport_dist += 128; },
 			//	requisito: function() { /* Ter o Teleporte*/ }
 			//}),
 			

@@ -63,7 +63,7 @@ function die(_alvo, _forca = 0, _dir = undefined)
 	tinta_splatter(_mx, _my, global.tinta_raio_morte, _cor,
 		global.tinta_gotas_morte, _hit, global.tinta_forca_morte)
 	
-	if (_pontos > 0){ popup_criar(_mx, _my - 10, string(_pontos), _cor) }
+	if (_pontos > 0){ popup_criar(_mx, _my - 40, string(_pontos), _cor) }
 	zoom_add(global.zoom_kill);
 	
 	global.kills_loop += 1;
@@ -164,7 +164,30 @@ function playback_reiniciar() {
 function clone_valor(_loop, _upgrade = 0)
 {
 	//Tutorial NÃO pontua
-	if (_loop <= global.loops_tutorial) return 0;
+	if (_loop <= global.loop_indice_sem_pontos) return 0;
 	
 	return (global.clone_pontos + _upgrade) * (_loop * global.loop_factor);
+}
+
+/// @desc quão iminente é o próximo tiro deste clone
+function windup_calcular()
+{
+	if (bullet_count <= 0) return 0;
+	
+	var _n = array_length(buffer);
+	var _janela = global.windup_frames;
+	
+	for (var _k = 0; _k <= _janela; _k++)
+	{
+		var _i = playback_step + _k;
+		if (_i >= _n) break;
+		
+		//Só conta se o cooldown já vai ter zerado quando chegar lá
+		if (buffer[_i].atirando && cooldown - _k <= 0)
+		{
+			return 1 - (_k / _janela);
+		}
+	}
+	
+	return 0;
 }

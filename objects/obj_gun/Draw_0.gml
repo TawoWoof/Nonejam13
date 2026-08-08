@@ -1,36 +1,18 @@
-var _cor = (player.type == BULLET_OWNER.CLONE) ? player.cor_viva : c_white;
-var _alpha = (player.type == BULLET_OWNER.CLONE) ? player.alpha_atual : image_alpha;
+var _dono_clone = (player.type == BULLET_OWNER.CLONE);
 
-draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle,
-	_cor, _alpha);
+var _xs = image_xscale * (1 + def);
+var _ys = image_yscale * (1 - def * global.arma_perp);
+var _ang = image_angle + (global.arma_recuo_ang * recuo - global.windup_ang * windup) * sign(image_yscale);
+
+draw_sprite_ext(sprite_index, image_index, x, y, _xs, _ys, _ang,
+	_dono_clone ? player.cor_viva : c_white,
+	_dono_clone ? player.alpha_atual : image_alpha);
 
 //Clarão na ponta do cano
 if (flash_timer > 0)
 {
 	draw_sprite_ext(spr_muzzle_flash, 0,
-		x + lengthdir_x(cano, image_angle),
-		y + lengthdir_y(cano, image_angle),
-		1, image_yscale, image_angle, c_white, 1);
+		x + lengthdir_x(cano * (1 + def), _ang),
+		y + lengthdir_y(cano * (1 + def), _ang),
+		1, _ys, _ang, c_white, 1);
 }
-
-if(!global.debug) exit;
-
-draw_set_font(fnt_debug);
-
-var _yy = y + 20;
-var _font_size = font_get_size(fnt_debug);
-var _spacing = 10 + _font_size;
-
-var _info = [
-	player
-];
-
-for(var i = 0; i < array_length(_info); i++)
-{
-	var _text = _info[i];
-	
-	draw_text(x + 20, _yy, _text);
-	_yy += _spacing;
-}
-
-draw_set_font(-1);

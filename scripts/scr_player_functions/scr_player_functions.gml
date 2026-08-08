@@ -63,8 +63,8 @@ function mover(_move_x, _move_y) {
 		vel_y = lerp(vel_y, _target_y, _rate_y);
 	
 		//Zera a velocidade se estiver no decimais
-		if (abs(vel_x) < 0.05){ vel_x = 0 };
-		if (abs(vel_y) < 0.05){ vel_y = 0 };
+		if (abs(vel_x) < 0.2){ vel_x = 0 };
+		if (abs(vel_y) < 0.2){ vel_y = 0 };
 	}
 	
 	var _preso = place_meeting(x, y, obj_wall);
@@ -228,7 +228,11 @@ function atirar(_mira){
 	if (type == BULLET_OWNER.PLAYER) { shake_add(global.shake_tiro, _mira); }
 	
 	//Clarão no cano
-	if (gun != noone && instance_exists(gun)) { gun.flash_timer = global.muzzle_dur; }
+	if (gun != noone && instance_exists(gun))
+	{
+		gun.flash_timer = global.muzzle_dur;
+		gun.recuo = 1;
+	}
 	
 	//Ativa o cooldown
 	cooldown = max(2, round(fire_rate * power(global.adrenalina_fator, adrenalina * urgencia_relogio())));
@@ -435,7 +439,7 @@ function alvo_curva(_x, _y, _dir, _obj)
 /// @desc Empurra a instância pra fora de paredes, se estiver presa
 /// @arg {REAL} _passo Distância entre anéis de busca
 /// @arg {REAL} _max Raio máximo de busca
-function desencavar(_passo = 4, _max = 96)
+function desencavar(_passo = 16, _max = 384)
 {
 	if (!place_meeting(x, y, obj_wall)) exit;
 	
@@ -459,6 +463,8 @@ function desencavar(_passo = 4, _max = 96)
 		}
 	}
 }
+
+
 
 /// @desc Reage a uma batida em parede
 /// @arg {REAL} _vel Velocidade no instante do impacto

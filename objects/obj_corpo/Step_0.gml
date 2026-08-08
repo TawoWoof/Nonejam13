@@ -1,5 +1,8 @@
 if (!global.frame_ativo) exit;
 
+x += global.deriva_x;
+y += global.deriva_y;
+
 //Primeiro frame depois do congelamento = Vai jogar no vasco
 if (!trocou)
 {

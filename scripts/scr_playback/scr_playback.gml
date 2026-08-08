@@ -60,7 +60,7 @@ function loop_start()
 }
 
 /// @desc Calcula locais de possível spawn random para o player
-function spawn_player(_dist = 128) {
+function spawn_player(_dist = 512) {
 	
 	//Se for o primeiro loop, envia as informações 
 	if (global.loop_atual == 1){ return { x: global.tutorial_x, y: global.tutorial_y }; }
@@ -73,7 +73,7 @@ function spawn_player(_dist = 128) {
 	var _mask_player = mask_index;
 	mask_index = spr_clone
 	
-	var _margem = 32;
+	var _margem = 128;
 	
 	for (var t = 0; t < _try; t++)
 	{

@@ -1,4 +1,5 @@
-draw_set_font(fnt_debug);
+draw_set_font(fnt_final);
+draw_set_color(c_black)
 
 var _gw = display_get_gui_width();
 var _gh = display_get_gui_height();
@@ -8,16 +9,14 @@ if (room == rm_base && global.estado == GAME.LOOP || global.estado == GAME.GAP |
 {
 	if (instance_exists(global.player))
 	{
-		var _lado = 10;
-		var _gap = 4;
+		var _lado = 25;
+		var _gap = 10;
 		
 		for (var i = 0; i < global.player.max_hp; i++)
 		{
-			var _x1 = 16 + i * (_lado + _gap);
-			
+			var _x1 = 40 + i * (_lado + _gap);
 			var _oco = (i >= global.player.hp);
-			
-			draw_rectangle_color(_x1, 16, _x1 + _lado, 16 + _lado, c_white, c_white, c_white, c_white, _oco)
+			draw_rectangle_color(_x1, 40, _x1 + _lado, 40 + _lado, c_black, c_black, c_black, c_black, _oco)
 		}
 	}
 	
@@ -29,64 +28,59 @@ if (room == rm_base && global.estado == GAME.LOOP || global.estado == GAME.GAP |
 		//Treme e esquenta conforme o tempo acaba
 		var _tx = random_range(-1, 1) * _u * global.relogio_tremor;
 		var _ty = random_range(-1, 1) * _u * global.relogio_tremor;
-		var _cr = merge_colour(c_white, global.vinheta_cor, _u);
+		var _cr = merge_colour(c_black, global.vinheta_cor, _u);
 		
 		draw_set_halign(fa_center);
-		draw_text_color(_gw * 0.5 + _tx, 14 + _ty, _tempo, _cr, _cr, _cr, _cr, 1);
+		draw_texto_color(_gw * 0.5 + _tx, 35 + _ty, _tempo, FNT_HUD, _cr);
 		draw_set_halign(fa_left);
 	}
 	
 	draw_set_halign(fa_right);
-	draw_text(_gw - 16, 14, string(global.pontos))
-	
+	draw_texto(_gw - 40, 35, string(global.pontos), FNT_HUD)
+		
 	var _falta = cartas_faltam()
-	draw_text(_gw - 16, 34, (_falta <=0) ? "CARTA AO FINAL DO LOOP" : "CARTA EM " + string(_falta))
+	draw_texto(_gw - 40, 85, (_falta <=0) ? "CARTA AO FINAL DO LOOP" : "CARTA EM " + string(_falta), FNT_HUD)
 	draw_set_halign(fa_left);
 }
+
+marcador_desenhar();
+
 #endregion
 
 #region TELAS DE ESTADO
 switch (global.estado) {
 	case GAME.MENU:
-		draw_text(40, 40, "APERTE QUALQUER TECLA");
-		break;
+		menu_desenhar();
+	break;
 	
 	case GAME.MORTE:
-		draw_text(40, 40, "MORREU — loop " + string(global.loop_atual));
-		draw_text(40, 60, "PONTOS: " + string(global.pontos));
-		break;
+		go_desenhar();
+	break;
 	
 	case GAME.CUTSCENE:
-		draw_text(40, 40, "[cutscene]");
-		break;
+		draw_texto(100, 100, "[cutscene]", FNT_HUD);
+	break;
 	
 	case GAME.GAP:
-		if (global.loop_atual > 0)
-		{
-			draw_set_halign(fa_center)
-			
-			draw_text(_gw * 0.5, 120, "LOOP " + string(global.loop_atual) + " FECHADO");
-			draw_text(_gw * 0.5, 156, "ABATES " + string(global.pontos_abates));
-			draw_text(_gw * 0.5, 176, "TEMPO " + string(global.pontos_tempo));
-			draw_text(_gw * 0.5, 206, "TOTAL " + string(global.pontos));
-			
-			draw_set_halign(fa_left)
-		}
+	
+		if (global.loop_atual > 0 && global.placar_fase > PLACAR.RESPIRO) { placar_desenhar(); }
+		
 	break;
 	
 	
 	case GAME.FREEZE:
 	
 		draw_set_halign(fa_center)
-		draw_text(_gw * 0.5, 90, "ESCOLHA UMA CARTA");
-		
+		draw_set_halign(fa_center)
+		draw_texto(_gw * 0.5, 225, "ESCOLHA UMA CARTA", FNT_HUD);
+			
 		for (var i = 0; i < array_length(global.cartas_opcoes); i++)
 		{
 			var _c = global.cartas_opcoes[i];
-			var _yy = 140 + (i * 50);
-			
-			draw_text(_gw * 0.5, + _yy, string( i + 1 ) + ") " + _c.nome);
-			draw_text(_gw * 0.5, + _yy + 18, _c.desc);
+			var _yy = 350 + (i * 125);
+				
+			draw_texto(_gw * 0.5, _yy, string( i + 1 ) + ") " + _c.nome, FNT_HUD);
+			draw_texto(_gw * 0.5, _yy + 45, _c.desc, FNT_HUD);
 		}
 		draw_set_halign(fa_left)
 	break;

@@ -16,7 +16,7 @@ function popup_criar(_x, _y, _texto, _cor)
 	var _p = instance_create_depth(_x, _y, global.popup_depth, obj_popup);
 	
 	_p.texto = _texto;
-	_p.cor = _cor;
+	_p.cor = merge_color(_cor, c_black, 0.5);
 }
 
 /// @desc Fantasma do rastro de dash

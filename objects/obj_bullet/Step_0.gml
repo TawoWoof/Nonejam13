@@ -136,7 +136,7 @@ if (owner_type == BULLET_OWNER.PLAYER) {
 }
 
 //Rede de segurança
-var _margem = 64;
+var _margem = 256;
 var _x1 = 0 - _margem
 var _x2 = room_width + _margem
 var _y1 = 0 - _margem

@@ -191,8 +191,8 @@
   "maintainGms1Font":false,
   "name":"fnt_debug",
   "parent":{
-    "name":"Nonejam13",
-    "path":"Nonejam13.yyp",
+    "name":"Fontes",
+    "path":"folders/Fontes.yy",
   },
   "pointRounding":0,
   "ranges":[

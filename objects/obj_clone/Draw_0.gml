@@ -2,15 +2,17 @@ var _mx = image_xscale * (1 + anim_esticar);
 var _my = image_yscale * (1 - anim_esticar);
 var _ang = image_angle + anim_girar;
 
+var _py = y + ((dash_timer > 0 || pouso_timer > 0) ? 0 : anim_pivo_y(_my));
+
 if(flash_timer > 0)
 {
 	gpu_set_fog(true, global.flash_cor, 0, 0);
-	draw_sprite_ext(sprite_index, image_index, x, y, _mx, _my, _ang, cor_viva, alpha_atual);
+	draw_sprite_ext(sprite_index, image_index, x, _py, _mx, _my, _ang, cor_viva, alpha_atual);
 	gpu_set_fog(false, c_black, 0, 0);
 }
 else
 {
-	draw_sprite_ext(sprite_index, image_index, x, y, _mx, _my, _ang, cor_viva, alpha_atual);
+	draw_sprite_ext(sprite_index, image_index, x, _py, _mx, _my, _ang, cor_viva, alpha_atual);
 }
 if(!global.debug) exit;
 

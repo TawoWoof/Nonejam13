@@ -1,6 +1,6 @@
 global.camera = noone; //Inicia camera
-global.shake_tiro = 6; //Força do tiro no shake
-global.shake_explosao = 14; //Força do tiro no shake
+global.shake_tiro = 32; //Força do tiro no shake
+global.shake_explosao = 64; //Força do tiro no shake
 
 /// @desc Soma um impulso de shake numa direção
 /// @arg {REAL} _forca Intensidade do impulso

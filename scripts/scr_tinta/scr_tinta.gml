@@ -33,6 +33,7 @@ function cor_dessaturar(_cor, _t)
 /// @arg {REAL} _forca Alcance extra na direção
 function tinta_splatter(_x, _y, _raio, _cor, _gotas = 6, _dir = undefined, _forca = 0)
 {
+	
 	if (!instance_exists(global.tinta)) exit;
 	
 	//Poça central
@@ -102,6 +103,27 @@ function corpo_criar(_alvo, _forca, _dir)
 	
 	_c.vel = _forca * global.corpo_impulso;
 	_c.dir = is_undefined(_dir) ? irandom(359) : _dir;
+	_c.ang = irandom(359);
+	_c.giro = random_range(-global.corpo_giro, global.corpo_giro);
+	
+	return _c;
+}
+
+/// @desc Cria um corpo solto (sem clone de origem). Usado no menu
+function corpo_solto(_x, _y, _cor, _forca, _dir)
+{
+	var _c = instance_create_depth(_x, _y, global.corpo_depth, obj_corpo);
+	
+	_c.spr = spr_clone_death;
+	_c.mask_index = global.mask_corpo;
+	_c.trocou = true;
+	_c.img = sprite_get_number(spr_clone_death) - 1;
+	_c.cor = _cor;
+	_c.xs = choose(-1, 1);
+	_c.ys = 1;
+	
+	_c.vel = _forca;
+	_c.dir = _dir;
 	_c.ang = irandom(359);
 	_c.giro = random_range(-global.corpo_giro, global.corpo_giro);
 	

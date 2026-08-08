@@ -33,8 +33,8 @@ shake_x += shake_vel_x;
 shake_y += shake_vel_y;
 
 //Corta o resíduo pra parar de verdade
-if (abs(shake_x) < 0.05 && abs(shake_vel_x) < 0.05) { shake_x = 0; shake_vel_x = 0; }
-if (abs(shake_y) < 0.05 && abs(shake_vel_y) < 0.05) { shake_y = 0; shake_vel_y = 0; }
+if (abs(shake_x) < 0.2 && abs(shake_vel_x) < 0.2) { shake_x = 0; shake_vel_x = 0; }
+if (abs(shake_y) < 0.2 && abs(shake_vel_y) < 0.2) { shake_y = 0; shake_vel_y = 0; }
 
 //Zoom punch
 zoom_vel -= zoom * global.zoom_mola;

@@ -16,7 +16,7 @@ shake_vel_x = 0;        //velocidade do deslocamento
 shake_vel_y = 0;
 shake_forca = 1;		//rigidez da mola: maior = volta mais rápido, tremor mais agudo
 shake_amort = 0.5;		//Duração (1 = infinito)
-shake_max = 30;			//Limite do recoil
+shake_max = 120;			//Limite do recoil
 
 //Zoom punch
 zoom = 0;

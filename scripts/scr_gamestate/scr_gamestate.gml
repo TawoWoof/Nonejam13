@@ -48,7 +48,7 @@ function jogo_rodando() {
 	return (	global.estado != GAME.MENU
 			&&  global.estado != GAME.MORTE
 			&&  global.estado != GAME.CUTSCENE
-			&&  global.estado != GAME.GAP
+			//&&  global.estado != GAME.GAP
 			&&  global.estado != GAME.FREEZE);
 }
 /// @desc Entra numa cutscene e então vai para o destino
@@ -66,18 +66,23 @@ function entrar_menu() {
 	if (room != rm_menu) { room_goto(rm_menu); }
 }
 
-function passo_menu() {
-	if (keyboard_check_pressed(vk_anykey)) {
-		estado_trocar(GAME.GAP);
-	}
-}
+function passo_menu() { }
 
 function entrar_gap() {
+	global.deriva_x = 0;
+	global.deriva_y = 0;
+	global.tinta_off_x = 0;
+	global.tinta_off_y = 0;
+	global.tinta_fade = 0;
+	global.tinta_escala = 1;
+	
 	global.gravando = false;
 	
-	if (global.loop_atual <= 0) { global.fade = 1; }
+	if (run_comecando()) { global.fade = 1; }
 	
 	if (room != rm_base) { room_goto(rm_base); }
+	
+	placar_iniciar();
 }
 
 function passo_gap() {
@@ -85,22 +90,32 @@ function passo_gap() {
 	if (room != rm_base){ exit };
 	if (!instance_exists(global.loop_master) || !instance_exists(global.player)){ exit };
 	
-	var _espera = (global.loop_atual <= 0) ? 0 : global.loop_gap;
-	
-	if (_espera > 0)
+	//Começo de run
+	if (run_comecando())
 	{
-
-		if (global.estado_timer >= global.gap_min && keyboard_check_pressed(vk_anykey))
-		{
-			global.estado_timer = max(global.estado_timer, _espera - global.transicao_dur);
-		}
+		global.fade = 1;
 		
-		var _falta = _espera - global.estado_timer;
-		global.fade = clamp(1 - (_falta / global.transicao_dur), 0, 1);
-		global.morph = -global.fade;
+		if (global.cartas_disponiveis > 0){ estado_trocar(GAME.FREEZE); exit }
+		
+		estado_trocar(GAME.LOOP);
+		exit;
 	}
 	
-	if (global.estado_timer < _espera){ exit };
+	placar_passo();
+	
+	if (global.estado_timer >= global.placar_limite && !placar_terminou())
+	{
+		placar_pular();
+	}
+	
+	if (!placar_terminou()) exit;
+	
+	//Segura o total e então fecha pro preto
+	var _falta = global.placar_segura - global.placar_timer;
+	global.fade = clamp(1 - (_falta / global.transicao_dur), 0, 1);
+	global.morph = -global.fade;
+	
+	if (global.placar_timer < global.placar_segura) exit;
 	
 	global.fade = 1;
 	
@@ -157,12 +172,12 @@ function entrar_morte() {
 	global.fade = 0;
 	global.morph = 0;
 	global.gravando = false;
+	
+	go_iniciar();
 }
 
 function passo_morte() {
-	if (global.estado_timer >= global.morte_espera) {
-		estado_trocar(GAME.MENU);
-	}
+	go_passo();
 }
 
 function entrar_livre() {
@@ -307,6 +322,8 @@ function cartas_faltam()
 /// Global sobrevive à troca de room, então precisa de reset explícito
 function run_resetar()
 {
+	placar_iniciar();
+		
 	global.fade = 0;
 	global.morph = 0;
 	global.freeze_saindo = false;;
@@ -334,4 +351,12 @@ function urgencia_visual()
 	if (global.loop_tempo == TIMELESS) return 0;
 	
 	return power(0.5, loop_steps_restantes() / global.vinheta_meia_vida);
+}
+
+/// @desc É o começo de uma run?
+function run_comecando()
+{
+	if (!instance_exists(global.loop_master)) return true;
+	
+	return (array_length(global.loop_master.loops) == 0);
 }

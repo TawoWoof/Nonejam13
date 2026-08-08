@@ -2,9 +2,15 @@ if (!jogo_rodando()) exit;
 
 if (flash_timer > 0){ flash_timer -= 1 }
 
+windup = 0;
+
 //buffer vazio = congelar
 if (array_length(buffer) == 0) { frozen = true }
-if(frozen) exit
+if(frozen) 
+{
+	sprite_atualizar(0, 0);	
+	exit
+}
 
 //Se tiver delay, reduz o timer e sai do step
 if (delay > 0)
@@ -42,6 +48,7 @@ empurrar();
 
 //Atualiza a mira
 mira_atual = _frame.mira;
+windup = windup_calcular();
 
 //Não vou nem falar pra que serve, tenta dar um chute :D
 sprite_atualizar(_frame.move_x, _frame.move_y);
@@ -49,6 +56,7 @@ sprite_atualizar(_frame.move_x, _frame.move_y);
 //Atira
 if (cooldown > 0) { cooldown -= 1; }
 if (_frame.atirando) { atirar(_frame.mira); }
+
 
 //Aumenta o step do playback
 playback_step += 1;

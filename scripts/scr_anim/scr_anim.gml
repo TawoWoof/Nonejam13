@@ -43,6 +43,8 @@ function sprite_atualizar(_move_x, _move_y)
 		anim_trocar(spr_dash);
 		anim_girar = 0;
 		
+		var _eixo = (abs(lengthdir_x(1, dash_dir)) > abs(lengthdir_y(1, dash_dir))) ? 1 : -1;
+		
 		if (dash_timer > 0)
 		{
 			//Rearma a aterrissagem a cada step do dash
@@ -50,7 +52,10 @@ function sprite_atualizar(_move_x, _move_y)
 			image_index = (dash_timer > dash_dur - global.anim_dash_saida) ? 0 : 1;
 			
 			var _t = 1 - (dash_timer / max(1, dash_dur));
-			anim_esticar = -cos(_t * 2 * pi) * global.anim_squash_dash + anim_impacto;
+			
+			var _env = (_t < 0.5) ? 1 : lerp(1, global.anim_dash_fim, (_t - 0.5) * 2);
+			
+			anim_esticar = anim_deformar(-cos(_t * 2 * pi) * global.anim_squash_dash * _env * _eixo);
 		}
 		else
 		{
@@ -59,7 +64,7 @@ function sprite_atualizar(_move_x, _move_y)
 			
 			//Aterrissagem
 			var _p = pouso_timer / max(1, global.anim_pouso_dur);
-			anim_esticar = -_p * global.anim_squash_dash + anim_impacto;
+			anim_esticar = anim_deformar(-_p * global.anim_squash_dash * global.anim_dash_fim  * _eixo);
 		}
 		
 		exit;
@@ -85,8 +90,23 @@ function sprite_atualizar(_move_x, _move_y)
 	anim_fase += _andando ? global.anim_fase_walk : global.anim_fase_idle;
 	
 	var _amp = _andando ? global.anim_squash_walk : global.anim_squash_idle;
-	anim_esticar = sin(anim_fase) * _amp + anim_impacto;
+	anim_esticar = anim_deformar(sin(anim_fase) * _amp);
 	
 	//Balanço na METADE da frequência do squash e uma inclinação por ciclo
 	anim_girar = _andando ? sin(anim_fase * 0.5) * global.anim_giro_walk * facing : 0;
+}
+
+/// @desc Soma a deformação da animação com o impacto
+/// @arg {REAL} _base Deformação vinda da animação
+function anim_deformar(_base)
+{
+	return clamp(_base + anim_impacto, -global.anim_esticar_max, global.anim_esticar_max);
+}
+
+/// @desc Deslocamento que mantém o PÉ do sprite parado durante a deformação
+/// @arg {REAL} _my Escala Y final do desenho
+function anim_pivo_y(_my)
+{
+	//Distância da origem até a base do sprite, e o quanto a escala mexeu nela
+	return (sprite_get_height(sprite_index) - sprite_get_yoffset(sprite_index)) * (1 - _my);
 }

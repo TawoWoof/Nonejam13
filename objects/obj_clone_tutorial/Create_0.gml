@@ -20,3 +20,5 @@ sprite_index = spr_clone_nogun;
 //Sem arma porque o jogador precisa ser UM MONSTRO!! MATANDO GENTE INOCENTE, QUE FEIO!!!!
 if (gun != noone && instance_exists(gun)) { instance_destroy(gun); }
 gun = noone;
+
+hp = 1;
